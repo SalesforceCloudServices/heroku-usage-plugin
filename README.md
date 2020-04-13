@@ -41,10 +41,10 @@ USAGE
   $ oclif-example usage:across-apps
 
 OPTIONS
-  -a, --app=app    comma separated list of app names or ids
-  -j, --json       provide the output as JSON
-  -t, --team=team  team name or id
-  -u, --user=user  account email or id or self
+  -a, --app=app                comma separated list of app names or ids
+  -f, --format=human|json|csv  [default: human] format of output
+  -t, --team=team              team name or id
+  -u, --user=user              account email or id or self
 
 DESCRIPTION
   ...
@@ -62,10 +62,10 @@ USAGE
   $ oclif-example usage:app-list
 
 OPTIONS
-  -j, --json       provide the output as JSON
-  -s, --silent     Run silently for use in other methods
-  -t, --team=team  team name or id
-  -u, --user=user  account email or id or self
+  -f, --format=human|json|csv  [default: human] format of output
+  -s, --silent                 Run silently for use in other methods
+  -t, --team=team              team name or id
+  -u, --user=user              account email or id or self
 
 DESCRIPTION
   ...
@@ -83,11 +83,10 @@ USAGE
   $ oclif-example usage:monthly
 
 OPTIONS
-  -b, --begin=begin  Inclusive Start YYYY-MM to ask from
-  -e, --end=end      Inclusive End YYYY-MM to ask until
-  -j, --json         provide the output as JSON
-  -s, --silent       Run silently for use in other methods
-  -t, --team=team    (required) Heroku Team Id
+  -b, --begin=begin            Inclusive Start YYYY-MM to ask from
+  -e, --end=end                Inclusive End YYYY-MM to ask until
+  -f, --format=human|json|csv  [default: human] format of output
+  -t, --team=team              (required) Heroku Team Id
 
 DESCRIPTION
   ...
