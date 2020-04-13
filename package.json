@@ -5,22 +5,33 @@
   "author": "Paul Roth @paulroth3d",
   "bugs": "https://github.com/SalesforceCloudServices/heroku-usage-plugin/issues",
   "dependencies": {
+    "@heroku-cli/color": "^1.1.14",
+    "@heroku-cli/command": "^8.3.0",
+    "@heroku-cli/typescript-api-schema": "0.0.1",
     "@oclif/command": "^1.5.19",
-    "@oclif/config": "^1.14.0"
+    "@oclif/config": "^1.14.0",
+    "cli-ux": "^5.4.5"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.22.2",
     "@oclif/plugin-help": "^2.2.3",
     "@oclif/test": "^1.2.5",
+    "@types/chai": "^4.2.11",
+    "@types/mocha": "^7.0.2",
     "chai": "^4.2.0",
-    "eslint": "^5.16.0",
+    "eslint": "^6.8.0",
     "eslint-config-oclif": "^3.1.0",
+    "eslint-plugin-import": "^2.20.2",
+    "fs-extra": "^9.0.0",
     "globby": "^10.0.2",
-    "mocha": "^5.2.0",
-    "nyc": "^14.1.1"
+    "heroku-cli-util": "^8.0.12",
+    "mocha": "^7.1.1",
+    "nock": "^12.0.3",
+    "path": "^0.12.7",
+    "watch": "^1.0.2"
   },
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=10.0.0"
   },
   "files": [
     "/npm-shrinkwrap.json",
@@ -43,9 +54,15 @@
   "repository": "SalesforceCloudServices/heroku-usage-plugin",
   "scripts": {
     "postpack": "rm -f oclif.manifest.json",
-    "posttest": "eslint .",
+    "posttest": "npm run lint --silent",
     "prepack": "oclif-dev manifest && oclif-dev readme",
-    "test": "nyc mocha --forbid-only \"test/**/*.test.js\"",
-    "version": "oclif-dev readme && git add README.md"
+    "test": "node node_modules/mocha/bin/mocha src --recursive",
+    "test:watch": "npm run test --silent -- --watch",
+    "test:debug": "node node_modules/mocha/bin/mocha src --recursive --inspect-brk",
+    "version": "oclif-dev readme && git add README.md",
+    "lint": "node node_modules/eslint/bin/eslint.js .",
+    "lint:watch": "node node_modules/watch/cli.js 'clear && date && npm run lint && echo \"--clean--\"' src",
+    "debug": "node --inspect-brk bin/run",
+    "debug:info": "env DEBUG=* bin/run"
   }
 }
