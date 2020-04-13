@@ -1,0 +1,13 @@
+{
+	"folders": [
+        {
+            "path": "."
+        },
+        {
+            "path": "../heroku-usage-plugin"
+        }
+    ],
+    "settings": {
+        "debug.node.autoAttach": "on"
+    }
+}
