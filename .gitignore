@@ -6,4 +6,5 @@
 /yarn.lock
 node_modules
 .tmp
+screenlog*
 
