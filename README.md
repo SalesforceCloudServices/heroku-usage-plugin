@@ -28,23 +28,71 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`oclif-example hello`](#oclif-example-hello)
+* [`oclif-example usage:across-apps`](#oclif-example-usageacross-apps)
+* [`oclif-example usage:app-list`](#oclif-example-usageapp-list)
+* [`oclif-example usage:monthly`](#oclif-example-usagemonthly)
 
-## `oclif-example hello`
+## `oclif-example usage:across-apps`
+
+(Demo) Determines dyno and add-on: usage and cost
+
+```
+USAGE
+  $ oclif-example usage:across-apps
+
+OPTIONS
+  -a, --app=app    comma separated list of app names or ids
+  -j, --json       provide the output as JSON
+  -t, --team=team  team name or id
+  -u, --user=user  account email or id or self
+
+DESCRIPTION
+  ...
+  Extra documentation goes here everything
+```
+
+_See code: [src/commands/usage/across-apps.js](https://github.com/SalesforceCloudServices/heroku-usage-plugin/blob/v0.0.0/src/commands/usage/across-apps.js)_
+
+## `oclif-example usage:app-list`
+
+Determines the list of apps available (by user or team)
+
+```
+USAGE
+  $ oclif-example usage:app-list
+
+OPTIONS
+  -j, --json       provide the output as JSON
+  -s, --silent     Run silently for use in other methods
+  -t, --team=team  team name or id
+  -u, --user=user  account email or id or self
+
+DESCRIPTION
+  ...
+  Extra documentation goes here apps
+```
+
+_See code: [src/commands/usage/app-list.js](https://github.com/SalesforceCloudServices/heroku-usage-plugin/blob/v0.0.0/src/commands/usage/app-list.js)_
+
+## `oclif-example usage:monthly`
 
 Describe the command here
 
 ```
 USAGE
-  $ oclif-example hello
+  $ oclif-example usage:monthly
 
 OPTIONS
-  -n, --name=name  name to print
+  -b, --begin=begin  Inclusive Start YYYY-MM to ask from
+  -e, --end=end      Inclusive End YYYY-MM to ask until
+  -j, --json         provide the output as JSON
+  -s, --silent       Run silently for use in other methods
+  -t, --team=team    (required) Heroku Team Id
 
 DESCRIPTION
   ...
   Extra documentation goes here
 ```
 
-_See code: [src/commands/hello.js](https://github.com/SalesforceCloudServices/heroku-usage-plugin/blob/v0.0.0/src/commands/hello.js)_
+_See code: [src/commands/usage/monthly.js](https://github.com/SalesforceCloudServices/heroku-usage-plugin/blob/v0.0.0/src/commands/usage/monthly.js)_
 <!-- commandsstop -->

@@ -13,7 +13,7 @@ const {test} = require('@oclif/test');
 const cli = require('heroku-cli-util');
 /* eslint-enable no-unused-vars */
 
-const AppCommand = require('../../src/commands/usage/list');
+const AppCommand = require('../../src/commands/usage/app-list');
 
 const generateApps = (count) => [...new Array(count).keys()].map((index) => ({
   id: `id_${index}`,

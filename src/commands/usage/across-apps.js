@@ -9,9 +9,7 @@ const path = require('path');
 const fs = require('fs-extra');
 /* eslint-enable no-unused-vars */
 
-//-- @TODO: separate out methods to utility
-
-const AppsCommand = require('./list');
+const AppsCommand = require('./app-list');
 const ObjectUtil = require('../../modules/ObjectUtil');
 const PrintUtil = require('../../modules/PrintUtil');
 
@@ -23,8 +21,12 @@ class EverythingCommand extends Command {
     const appFlag = commandFlags.app || null;
     const user = commandFlags.user || null;
     const team = commandFlags.team || null;
-    const json = commandFlags.json || false;
-    const useIso = json ? true : false;
+    const format = commandFlags.format || 'human';
+    const tableFormat = {
+      csv: format === 'csv',
+      'no-truncate': format === 'csv'
+    };
+    const useIso = format !== 'human';
     let appList;
 
     const localizeDate = PrintUtil.printDate.bind(null, useIso);
@@ -112,7 +114,6 @@ class EverythingCommand extends Command {
       //   JSON.stringify(results, null, 2),
       //   {encoding: 'UTF8'}
       // );
-
       // cli.log('results are found');
     } catch (error) {
       if (error.statusCode === 401) {
@@ -197,9 +198,8 @@ class EverythingCommand extends Command {
         createdAt: localizeDate(app.appBody.created_at),
         updatedAt: localizeDate(app.appBody.updated_at)
       }));
-    
 
-    if (json) {
+    if (format === 'json') {
       cli.log(JSON.stringify(jsonResults, null, 2));
     } else {
       ux.table(jsonResults.addons, {
@@ -214,7 +214,7 @@ class EverythingCommand extends Command {
         unit: {header: 'Unit'},
         updatedAt: {header: 'Updated At'},
         createdAt: {header: 'Created At'}
-      });
+      }, tableFormat);
 
       cli.log('\n');
 
@@ -231,7 +231,7 @@ class EverythingCommand extends Command {
         unit: {header: 'Unit'},
         updatedAt: {header: 'Updated At'},
         createdAt: {header: 'Created At'}
-      });
+      }, tableFormat);
 
       cli.log('\n');
 
@@ -245,7 +245,7 @@ class EverythingCommand extends Command {
         space: {header: 'Space'},
         updatedAt: {header: 'Updated At'},
         createdAt: {header: 'Created At'}
-      });
+      }, tableFormat);
     }
 
     // cli.log('success');
@@ -254,7 +254,7 @@ class EverythingCommand extends Command {
   }
 }
 
-EverythingCommand.description = `(Demo) Determines dyno and add-on usage and cost
+EverythingCommand.description = `(Demo) Determines dyno and add-on: usage and cost
 ...
 Extra documentation goes here everything
 `;
@@ -263,7 +263,7 @@ EverythingCommand.flags = {
   app: flags.string({char: 'a', description: 'comma separated list of app names or ids'}),
   user: flags.string({char: 'u', description: 'account email or id or self'}),
   team: flags.string({char: 't', description: 'team name or id'}),
-  json: flags.boolean({char: 'j', description: 'provide the output as JSON'})
+  format: flags.string({char: 'f', description: 'format of output', default: 'human', options: ['human', 'json', 'csv']})
 };
 
 module.exports = EverythingCommand;

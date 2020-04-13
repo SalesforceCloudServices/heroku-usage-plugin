@@ -22,9 +22,13 @@ class AppsCommand extends Command {
     const {flags: commandFlags} = this.parse(AppsCommand);
     let team = commandFlags.team || null;
     let user = commandFlags.user || null;
-    let json = commandFlags.json || false;
+    const format = commandFlags.format || 'human';
     let silent = commandFlags.silent || false;
 
+    const tableFormat = {
+      csv: format === 'csv',
+      'no-truncate': format === 'csv'
+    };
     const {apiURL, apiName} = AppsCommand.getTargetInfo(team, user);
 
     try {
@@ -38,7 +42,7 @@ class AppsCommand extends Command {
 
       if (silent) {
         //-- do nothing
-      } else if (json) {
+      } else if (format === 'json') {
         cli.log(JSON.stringify(appList, null, 2));
       } else {
         cli.log(appList.join('\n'));
@@ -80,8 +84,8 @@ Extra documentation goes here apps
 AppsCommand.flags = {
   user: flags.string({char: 'u', description: 'account email or id or self'}),
   team: flags.string({char: 't', description: 'team name or id'}),
-  json: flags.boolean({char: 'j', description: 'provide the output as JSON'}),
-  silent: flags.boolean({char: 's', description: 'Run silently for use in other methods'})
+  silent: flags.boolean({char: 's', description: 'Run silently for use in other methods'}),
+  format: flags.string({char: 'f', description: 'format of output', default: 'human', options: ['human', 'json', 'csv']})
 };
 
 module.exports = AppsCommand;

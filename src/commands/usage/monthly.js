@@ -6,10 +6,10 @@ const {ux} = require('cli-ux');
 const cli = require('heroku-cli-util');
 /* eslint-enable no-unused-vars */
 
+// const PrintUtil = require('../../modules/PrintUtil');
+
 const generateMonthyUsageURL = (teamIdOrName, start, end) => `/teams/${teamIdOrName}/usage/monthly?start=${start}&end=${end}`;
 const generateTeamInfoURL = (teamIdOrName) => `/teams/${teamIdOrName}`;
-
-const formatNumber = (n) => n ? (n).toLocaleString() : '';
 
 class MonthlyCommand extends Command {
   async run() {
@@ -18,10 +18,15 @@ class MonthlyCommand extends Command {
     let stdOutResults;
     const {flags: commandFlags} = this.parse(MonthlyCommand);
     const teamId = commandFlags.team || null;
-    let json = commandFlags.json || false;
+    const format = commandFlags.format || 'human';
     let silent = commandFlags.silent || false;
     let begin = commandFlags.begin || null;
     let end = commandFlags.end || null;
+
+    const tableFormat = {
+      csv: format === 'csv',
+      'no-truncate': format === 'csv'
+    };
 
     if (!begin) {
       begin = new Date().toISOString().slice(0, 7);
@@ -68,7 +73,7 @@ class MonthlyCommand extends Command {
 
     if (silent) {
       //-- do nothing
-    } else if (json) {
+    } else if (format === 'json') {
       cli.log(JSON.stringify(results, null, 2));
     } else {
       ux.table(stdOutResults, {
@@ -81,7 +86,7 @@ class MonthlyCommand extends Command {
         data: {header: 'data'},
         partner: {header: 'partner'},
         space: {header: 'spaces'}
-      });
+      }, tableFormat);
     }
 
     return Promise.resolve(results);
@@ -95,10 +100,10 @@ Extra documentation goes here
 
 MonthlyCommand.flags = {
   team: flags.string({char: 't', description: 'Heroku Team Id', required: true}),
-  json: flags.boolean({char: 'j', description: 'provide the output as JSON'}),
-  silent: flags.boolean({char: 's', description: 'Run silently for use in other methods'}),
+  format: flags.string({char: 'f', description: 'format of output', default: 'human', options: ['human', 'json', 'csv']}),
   begin: flags.string({char: 'b', description: 'Inclusive Start YYYY-MM to ask from'}),
-  end: flags.string({char: 'e', description: 'Inclusive End YYYY-MM to ask until'})
+  end: flags.string({char: 'e', description: 'Inclusive End YYYY-MM to ask until'}),
+  silent: flags.boolean({char: 's', hidden: true, description: 'Run silently for use in other methods'}),
 };
 
 module.exports = MonthlyCommand;
