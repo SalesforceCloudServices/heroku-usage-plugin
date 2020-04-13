@@ -56,12 +56,12 @@
     "postpack": "rm -f oclif.manifest.json",
     "posttest": "npm run lint --silent",
     "prepack": "oclif-dev manifest && oclif-dev readme",
-    "test": "node node_modules/mocha/bin/mocha src --recursive",
+    "test": "node node_modules/mocha/bin/mocha test --recursive",
     "test:watch": "npm run test --silent -- --watch",
     "test:debug": "node node_modules/mocha/bin/mocha src --recursive --inspect-brk",
     "version": "oclif-dev readme && git add README.md",
     "lint": "node node_modules/eslint/bin/eslint.js .",
-    "lint:watch": "node node_modules/watch/cli.js 'clear && date && npm run lint && echo \"--clean--\"' src",
+    "lint:watch": "node node_modules/watch/cli.js 'clear && date && npm run lint && echo \"--clean--\"' src test",
     "debug": "node --inspect-brk bin/run",
     "debug:info": "env DEBUG=* bin/run"
   }
