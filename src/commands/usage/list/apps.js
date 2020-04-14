@@ -11,17 +11,17 @@ const generateTeamAppsURL = (team) => `/teams/${team}/apps`;
 const generateUserAppsURL = (user) => `/users/${user}/apps`;
 const generateCurrentUserAppsURL = () => '/apps';
 
-class AppsCommand extends Command {
+class ListAppsCommand extends Command {
   async run() {
     let results;
 
-    const {flags: commandFlags} = this.parse(AppsCommand);
+    const {flags: commandFlags} = this.parse(ListAppsCommand);
     let team = commandFlags.team || null;
     let user = commandFlags.user || null;
     const format = commandFlags.format || 'human';
     let silent = commandFlags.silent || false;
 
-    const {apiURL, apiName} = AppsCommand.getTargetInfo(team, user);
+    const {apiURL, apiName} = ListAppsCommand.getTargetInfo(team, user);
 
     try {
       ux.action.start(`Retrieiving apps ${apiName}`);
@@ -68,16 +68,16 @@ class AppsCommand extends Command {
   }
 }
 
-AppsCommand.description = `Determines the list of apps available: by user or team.
+ListAppsCommand.description = `Determines the list of apps available: by user or team.
 
 (If no user or term is specified, then the apps available to the current user is provided)
 `;
 
-AppsCommand.flags = {
+ListAppsCommand.flags = {
   user: flags.string({char: 'u', description: 'account email or id or self'}),
   team: flags.string({char: 't', description: 'team name or id'}),
   format: flags.string({char: 'f', description: 'format of output', default: 'human', options: ['human', 'json', 'csv']}),
   silent: flags.boolean({char: 's', hidden: true, description: 'Run silently for use in other methods'})
 };
 
-module.exports = AppsCommand;
+module.exports = ListAppsCommand;

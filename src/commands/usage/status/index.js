@@ -9,7 +9,7 @@ const path = require('path');
 const fs = require('fs-extra');
 /* eslint-enable no-unused-vars */
 
-const AppsCommand = require('../app-list');
+const AppsCommand = require('../list/apps');
 const ObjectUtil = require('../../../modules/ObjectUtil');
 const PrintUtil = require('../../../modules/PrintUtil');
 

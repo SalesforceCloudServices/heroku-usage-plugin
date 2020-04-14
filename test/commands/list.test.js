@@ -13,7 +13,7 @@ const {test} = require('@oclif/test');
 const cli = require('heroku-cli-util');
 /* eslint-enable no-unused-vars */
 
-const AppCommand = require('../../src/commands/usage/app-list');
+const AppCommand = require('../../src/commands/usage/list/apps');
 
 const generateApps = (count) => [...new Array(count).keys()].map((index) => ({
   id: `id_${index}`,
@@ -67,7 +67,7 @@ describe('AppCommand', () => {
       heroku.get('/apps')
         .reply(200, APPS_FIVE);
       
-      return AppCommand.run(['-j'])
+      return AppCommand.run(['-f', 'json'])
         .then((results) => {
           const expected = '[\n  "app_name_0",\n  "app_name_1",\n  "app_name_2",\n  "app_name_3",\n  "app_name_4"\n]\n';
           expect(cli.stdout).to.equal(expected);
@@ -146,7 +146,7 @@ describe('AppCommand', () => {
       heroku.get('/teams/my-team/apps')
         .reply(200, APPS_FIVE);
       
-      return AppCommand.run(['-t', 'my-team', '-j'])
+      return AppCommand.run(['-t', 'my-team', '-f', 'json'])
         .then((results) => {
           const expected = '[\n  "app_name_0",\n  "app_name_1",\n  "app_name_2",\n  "app_name_3",\n  "app_name_4"\n]\n';
           expect(cli.stdout).to.equal(expected);
@@ -225,7 +225,7 @@ describe('AppCommand', () => {
       heroku.get('/users/janet/apps')
         .reply(200, APPS_FIVE);
       
-      return AppCommand.run(['-u', 'janet', '-j'])
+      return AppCommand.run(['-u', 'janet', '-f', 'json'])
         .then((results) => {
           const expected = '[\n  "app_name_0",\n  "app_name_1",\n  "app_name_2",\n  "app_name_3",\n  "app_name_4"\n]\n';
           expect(cli.stdout).to.equal(expected);
