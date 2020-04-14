@@ -14,11 +14,11 @@ const AppsCommand = require('../app-list');
 // const ObjectUtil = require('../../../modules/ObjectUtil');
 const PrintUtil = require('../../../modules/PrintUtil');
 
-class AppStatusCommand extends StatusCommand {
+class AddonStatusCommand extends StatusCommand {
   async run() {
     let results;
     let jsonResults = {};
-    const {flags: commandFlags} = this.parse(AppStatusCommand);
+    const {flags: commandFlags} = this.parse(AddonStatusCommand);
     const appFlag = commandFlags.app || null;
     const user = commandFlags.user || null;
     const team = commandFlags.team || null;
@@ -32,9 +32,9 @@ class AppStatusCommand extends StatusCommand {
 
     const localizeDate = PrintUtil.printDate.bind(null, useIso);
     const localizeNumber = PrintUtil.printNumber.bind(null, useIso);
-    // const printPlan = PrintUtil.printHerokuCostPlan;
-    // const printUnit = PrintUtil.printHerokuCostUnit;
-    // const printCost = PrintUtil.printHerokuCostPrice.bind(null, useIso);
+    const printPlan = PrintUtil.printHerokuCostPlan;
+    const printUnit = PrintUtil.printHerokuCostUnit;
+    const printCost = PrintUtil.printHerokuCostPrice.bind(null, useIso);
 
     if (appFlag) {
       appList = appFlag.split(/\s*,\s*/);
@@ -55,33 +55,39 @@ class AppStatusCommand extends StatusCommand {
     results = require('../../../.tmp/psa_data.json');
     */
 
-    results = await this.getStatus(appList, false, false);
+    results = await this.getStatus(appList, true, false);
 
-    jsonResults.apps = Object.keys(results)
-      .map((key) => results[key])
-      .map((app) => ({
-        appId: app.appBody.id,
-        appName: app.appBody.name,
-        region: app.appBody.region ? app.appBody.region.name : '',
-        maintenance: app.appBody.maintenance,
-        repoSize: localizeNumber(app.appBody.repo_size),
-        slugSize: localizeNumber(app.appBody.slug_size),
-        space: app.appBody.space ? app.appBody.space.name : '',
-        createdAt: localizeDate(app.appBody.created_at),
-        updatedAt: localizeDate(app.appBody.updated_at)
-      }));
+    const allAddons = this.getAllAddons(results);
+
+    jsonResults.addons = allAddons.map((addon) => ({
+      appId: addon.app.id,
+      appName: addon.app.name,
+      name: addon.name,
+      service: addon.addon_service.name,
+      addonId: addon.id,
+      attachments: localizeNumber(addon.addonAttachments.length),
+      attachmentApplications: addon.addonAttachments,
+      planName: printPlan(addon.plan.name),
+      cost: printCost(addon.billed_price),
+      unit: printUnit(addon.billed_price),
+      state: addon.state,
+      updatedAt: localizeDate(addon.updated_at),
+      createdAt: localizeDate(addon.created_at)
+    }));
 
     if (format === 'json') {
       cli.log(JSON.stringify(jsonResults, null, 2));
     } else {
-      ux.table(jsonResults.apps, {
+      ux.table(jsonResults.addons, {
+        // addonId: {header: 'Add-On Id'},
         // appId: {header: 'App Id'},
         appName: {header: 'App Name'},
-        region: {header: 'Region'},
-        maintenance: {header: 'Maintenance'},
-        repoSize: {header: 'Repo Size'},
-        slugSize: {header: 'Slug Size'},
-        space: {header: 'Space'},
+        // name: {header: 'Add-On Name'},
+        service: {header: 'Service'},
+        attachments: {header: '# Attachments'},
+        planName: {header: 'Plan'},
+        cost: {header: 'ListPrice'},
+        unit: {header: 'Unit'},
         updatedAt: {header: 'Updated At'},
         createdAt: {header: 'Created At'}
       }, tableFormat);
@@ -93,28 +99,38 @@ class AppStatusCommand extends StatusCommand {
   }
 }
 
-AppStatusCommand.description = `Status for a set of heroku apps.
+AddonStatusCommand.description = `Add-Ons leveraged for a set of Heroku Apps.
+
+The number of Attached Add-Ons are currently limited to the Applications retrieved.
+To get a truly representative list of Apps using the Add-Ons,
+it is recommended that a wider net of Applications be requested.
+
+The full list of applications that leverage the attachment is the
+'attachmentApplications' list provided within --format JSON.
 
 (Please note that if neither a team or user is specified, all apps for the current user are considered)
 
+The ListPrice of the Add-On is likely not the price being paid.
+However, this price can often directionally which Add-Ons are more expensive than others.
+
 App Name: Name of the Heroku Application
-Region: Region of the Heroku Application
-Maintenance: Whether the app is under maintenance mode (true) or not (false)
-Repo Size: Size of the repository for the Application
-Slug Size: Size of the Slug used for the Application
-Space: Name of the Private Space used
+Service: Name of the Add-On Service
+Attachments: # of apps this Add-On is attached to
+Plan: Name of the Plan this Add-On is using.
+ListPrice: List Price this Add-On would normally cost.
+Unit: The frequency that the Add-On cost would occur (ex: monthly)
 Updated At: Date/Time the Application was last updated
 Created At: Date/Time the Application was created
 
 For more information, please see:
-https://devcenter.heroku.com/articles/platform-api-reference#app
+https://devcenter.heroku.com/articles/platform-api-reference#add-on
 `;
 
-AppStatusCommand.flags = {
+AddonStatusCommand.flags = {
   app: flags.string({char: 'a', description: 'comma separated list of app names or ids'}),
   user: flags.string({char: 'u', description: 'account email or user id'}),
   team: flags.string({char: 't', description: 'team name or id'}),
   format: flags.string({char: 'f', description: 'format of output', default: 'human', options: ['human', 'json', 'csv']})
 };
 
-module.exports = AppStatusCommand;
+module.exports = AddonStatusCommand;

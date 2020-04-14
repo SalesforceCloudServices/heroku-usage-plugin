@@ -14,11 +14,11 @@ const AppsCommand = require('../app-list');
 // const ObjectUtil = require('../../../modules/ObjectUtil');
 const PrintUtil = require('../../../modules/PrintUtil');
 
-class AppStatusCommand extends StatusCommand {
+class DynoStatusCommand extends StatusCommand {
   async run() {
     let results;
     let jsonResults = {};
-    const {flags: commandFlags} = this.parse(AppStatusCommand);
+    const {flags: commandFlags} = this.parse(DynoStatusCommand);
     const appFlag = commandFlags.app || null;
     const user = commandFlags.user || null;
     const team = commandFlags.team || null;
@@ -31,10 +31,10 @@ class AppStatusCommand extends StatusCommand {
     let appList;
 
     const localizeDate = PrintUtil.printDate.bind(null, useIso);
-    const localizeNumber = PrintUtil.printNumber.bind(null, useIso);
+    // const localizeNumber = PrintUtil.printNumber.bind(null, useIso);
     // const printPlan = PrintUtil.printHerokuCostPlan;
-    // const printUnit = PrintUtil.printHerokuCostUnit;
-    // const printCost = PrintUtil.printHerokuCostPrice.bind(null, useIso);
+    const printUnit = PrintUtil.printHerokuCostUnit;
+    const printCost = PrintUtil.printHerokuCostPrice.bind(null, useIso);
 
     if (appFlag) {
       appList = appFlag.split(/\s*,\s*/);
@@ -55,33 +55,39 @@ class AppStatusCommand extends StatusCommand {
     results = require('../../../.tmp/psa_data.json');
     */
 
-    results = await this.getStatus(appList, false, false);
+    results = await this.getStatus(appList, false, true);
 
-    jsonResults.apps = Object.keys(results)
-      .map((key) => results[key])
-      .map((app) => ({
-        appId: app.appBody.id,
-        appName: app.appBody.name,
-        region: app.appBody.region ? app.appBody.region.name : '',
-        maintenance: app.appBody.maintenance,
-        repoSize: localizeNumber(app.appBody.repo_size),
-        slugSize: localizeNumber(app.appBody.slug_size),
-        space: app.appBody.space ? app.appBody.space.name : '',
-        createdAt: localizeDate(app.appBody.created_at),
-        updatedAt: localizeDate(app.appBody.updated_at)
-      }));
+    const allDynos = this.getAllDynos(results);
+
+    jsonResults.dynos = allDynos.map((dyno) => ({
+      dynoId: dyno.id,
+      dynoName: dyno.name,
+      appId: dyno.app.id,
+      appName: dyno.app.name,
+      size: dyno.size,
+      state: dyno.state,
+      type: dyno.type,
+      units: dyno.sizeInfo.dyno_units,
+      cost: printCost(dyno.sizeInfo.cost),
+      unit: printUnit(dyno.sizeInfo.cost),
+      updatedAt: localizeDate(dyno.updated_at),
+      createdAt: localizeDate(dyno.created_at)
+    }));
 
     if (format === 'json') {
       cli.log(JSON.stringify(jsonResults, null, 2));
     } else {
-      ux.table(jsonResults.apps, {
-        // appId: {header: 'App Id'},
+      ux.table(jsonResults.dynos, {
+        // appId: {header: 'App Name'},
+        // dynoId: {header: ''},
         appName: {header: 'App Name'},
-        region: {header: 'Region'},
-        maintenance: {header: 'Maintenance'},
-        repoSize: {header: 'Repo Size'},
-        slugSize: {header: 'Slug Size'},
-        space: {header: 'Space'},
+        dynoName: {header: 'Dyno Name'},
+        size: {header: 'Size'},
+        state: {header: 'State'},
+        type: {header: 'Type'},
+        units: {header: 'Units'},
+        cost: {header: 'ListPrice'},
+        unit: {header: 'Unit'},
         updatedAt: {header: 'Updated At'},
         createdAt: {header: 'Created At'}
       }, tableFormat);
@@ -93,28 +99,33 @@ class AppStatusCommand extends StatusCommand {
   }
 }
 
-AppStatusCommand.description = `Status for a set of heroku apps.
+DynoStatusCommand.description = `Dynos leveraged for a set of heroku apps.
 
 (Please note that if neither a team or user is specified, all apps for the current user are considered)
 
+The ListPrice of the Dyno is likely not the price being paid.
+However, this price can often directionally which Dynos are more expensive than others.
+
 App Name: Name of the Heroku Application
-Region: Region of the Heroku Application
-Maintenance: Whether the app is under maintenance mode (true) or not (false)
-Repo Size: Size of the repository for the Application
-Slug Size: Size of the Slug used for the Application
-Space: Name of the Private Space used
+Dyno Name: Name of the process on this dyno
+Size: Dyno Size (ex: 'standard-1X')
+State: Current status of the process (ex: crashed, up, down, etc.)
+Type: Type of process
+Units: Number of units incurred for this Dyno Size type
+ListPrice: List Price this Dyno would normally cost.
+Unit: The frequency that the Dyno cost would occur (ex: monthly)
 Updated At: Date/Time the Application was last updated
 Created At: Date/Time the Application was created
 
 For more information, please see:
-https://devcenter.heroku.com/articles/platform-api-reference#app
+https://devcenter.heroku.com/articles/platform-api-reference#dyno
 `;
 
-AppStatusCommand.flags = {
+DynoStatusCommand.flags = {
   app: flags.string({char: 'a', description: 'comma separated list of app names or ids'}),
   user: flags.string({char: 'u', description: 'account email or user id'}),
   team: flags.string({char: 't', description: 'team name or id'}),
   format: flags.string({char: 'f', description: 'format of output', default: 'human', options: ['human', 'json', 'csv']})
 };
 
-module.exports = AppStatusCommand;
+module.exports = DynoStatusCommand;
