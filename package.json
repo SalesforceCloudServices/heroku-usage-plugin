@@ -10,7 +10,10 @@
     "@heroku-cli/typescript-api-schema": "0.0.1",
     "@oclif/command": "^1.5.19",
     "@oclif/config": "^1.14.0",
-    "cli-ux": "^5.4.5"
+    "cli-ux": "^5.4.5",
+    "heroku-cli-util": "^8.0.12",
+    "fs-extra": "^9.0.0",
+    "path": "^0.12.7"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.22.2",
@@ -22,12 +25,9 @@
     "eslint": "^6.8.0",
     "eslint-config-oclif": "^3.1.0",
     "eslint-plugin-import": "^2.20.2",
-    "fs-extra": "^9.0.0",
     "globby": "^10.0.2",
-    "heroku-cli-util": "^8.0.12",
     "mocha": "^7.1.1",
     "nock": "^12.0.3",
-    "path": "^0.12.7",
     "watch": "^1.0.2"
   },
   "engines": {
@@ -53,6 +53,7 @@
   },
   "repository": "SalesforceCloudServices/heroku-usage-plugin",
   "scripts": {
+    "postinstall": "heroku plugins:install heroku-usage-plugin@beta",
     "postpack": "rm -f oclif.manifest.json",
     "posttest": "npm run lint --silent",
     "prepack": "oclif-dev manifest && oclif-dev readme",
