@@ -210,7 +210,7 @@ class EverythingCommand extends Command {
         service: {header: 'Service'},
         attachments: {header: '# Attachments'},
         planName: {header: 'Plan'},
-        cost: {header: 'Cost'},
+        cost: {header: 'ListPrice'},
         unit: {header: 'Unit'},
         updatedAt: {header: 'Updated At'},
         createdAt: {header: 'Created At'}
@@ -227,7 +227,7 @@ class EverythingCommand extends Command {
         state: {header: 'State'},
         type: {header: 'Type'},
         units: {header: 'Units'},
-        cost: {header: 'Cost'},
+        cost: {header: 'ListPrice'},
         unit: {header: 'Unit'},
         updatedAt: {header: 'Updated At'},
         createdAt: {header: 'Created At'}
