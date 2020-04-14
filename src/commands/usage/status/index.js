@@ -9,9 +9,9 @@ const path = require('path');
 const fs = require('fs-extra');
 /* eslint-enable no-unused-vars */
 
-const AppsCommand = require('./app-list');
-const ObjectUtil = require('../../modules/ObjectUtil');
-const PrintUtil = require('../../modules/PrintUtil');
+const AppsCommand = require('../app-list');
+const ObjectUtil = require('../../../modules/ObjectUtil');
+const PrintUtil = require('../../../modules/PrintUtil');
 
 class StatusCommand extends Command {
   async run() {
@@ -302,7 +302,7 @@ Please see those commands for more detail.
 
 StatusCommand.flags = {
   app: flags.string({char: 'a', description: 'comma separated list of app names or ids'}),
-  user: flags.string({char: 'u', description: 'account email or id or self'}),
+  user: flags.string({char: 'u', description: 'account email or user id'}),
   team: flags.string({char: 't', description: 'team name or id'}),
   format: flags.string({char: 'f', description: 'format of output', default: 'human', options: ['human', 'json', 'csv']})
 };
