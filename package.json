@@ -1,7 +1,7 @@
 {
   "name": "heroku-usage-plugin",
   "description": "Simple plugin to provide app / addon / dyno heroku usage for users / teams / enterprise accounts",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "author": "Paul Roth @paulroth3d",
   "bugs": "https://github.com/SalesforceCloudServices/heroku-usage-plugin/issues",
   "dependencies": {

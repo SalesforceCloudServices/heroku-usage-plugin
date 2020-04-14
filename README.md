@@ -19,7 +19,7 @@ $ npm install -g heroku-usage-plugin
 $ oclif-example COMMAND
 running command...
 $ oclif-example (-v|--version|version)
-heroku-usage-plugin/0.0.0 darwin-x64 node-v12.16.1
+heroku-usage-plugin/0.1.0 darwin-x64 node-v12.16.1
 $ oclif-example --help [COMMAND]
 USAGE
   $ oclif-example COMMAND
@@ -51,7 +51,7 @@ DESCRIPTION
   Extra documentation goes here everything
 ```
 
-_See code: [src/commands/usage/across-apps.js](https://github.com/SalesforceCloudServices/heroku-usage-plugin/blob/v0.0.0/src/commands/usage/across-apps.js)_
+_See code: [src/commands/usage/across-apps.js](https://github.com/SalesforceCloudServices/heroku-usage-plugin/blob/v0.1.0/src/commands/usage/across-apps.js)_
 
 ## `oclif-example usage:app-list`
 
@@ -72,7 +72,7 @@ DESCRIPTION
   Extra documentation goes here apps
 ```
 
-_See code: [src/commands/usage/app-list.js](https://github.com/SalesforceCloudServices/heroku-usage-plugin/blob/v0.0.0/src/commands/usage/app-list.js)_
+_See code: [src/commands/usage/app-list.js](https://github.com/SalesforceCloudServices/heroku-usage-plugin/blob/v0.1.0/src/commands/usage/app-list.js)_
 
 ## `oclif-example usage:monthly`
 
@@ -93,5 +93,5 @@ DESCRIPTION
   Extra documentation goes here
 ```
 
-_See code: [src/commands/usage/monthly.js](https://github.com/SalesforceCloudServices/heroku-usage-plugin/blob/v0.0.0/src/commands/usage/monthly.js)_
+_See code: [src/commands/usage/monthly.js](https://github.com/SalesforceCloudServices/heroku-usage-plugin/blob/v0.1.0/src/commands/usage/monthly.js)_
 <!-- commandsstop -->
