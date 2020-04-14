@@ -6,20 +6,27 @@ const {ux} = require('cli-ux');
 const cli = require('heroku-cli-util');
 /* eslint-enable no-unused-vars */
 
-const generateMonthyUsageURL = (teamIdOrName, start, end) => `/teams/${teamIdOrName}/usage/monthly?start=${start}&end=${end}`;
+const generateDailyUsageURL = (teamIdOrName, start, end) => `/teams/${teamIdOrName}/usage/daily?start=${start}&end=${end}`;
 const generateTeamInfoURL = (teamIdOrName) => `/teams/${teamIdOrName}`;
 
-class MonthlyCommand extends Command {
+class DailyCommand extends Command {
   async run() {
     let apiURL;
     let results;
     let stdOutResults;
-    const {flags: commandFlags} = this.parse(MonthlyCommand);
+    const yesterday = DailyCommand.getYesterday();
+    const {flags: commandFlags} = this.parse(DailyCommand);
+    let accountId = commandFlags.account || null;
     const teamId = commandFlags.team || null;
     const format = commandFlags.format || 'human';
     let silent = commandFlags.silent || false;
     let begin = commandFlags.begin || null;
     let end = commandFlags.end || null;
+
+    if (!accountId && !teamId) {
+      cli.error('Please specify either an Enterprise Account Id or Team Id');
+      return;
+    }
 
     const tableFormat = {
       csv: format === 'csv',
@@ -27,20 +34,23 @@ class MonthlyCommand extends Command {
     };
 
     if (!begin) {
-      begin = new Date().toISOString().slice(0, 7);
+      begin = yesterday.toISOString().slice(0, 10);
     }
     if (!end) {
-      end = new Date().toISOString().slice(0, 7);
+      end = yesterday.toISOString().slice(0, 10);
     }
 
     try {
-      ux.action.start('Team Info');
-      apiURL = generateTeamInfoURL(teamId);
-      const {body: teamResults} = await this.heroku.get(apiURL);
-      ux.action.stop();
+      if (!accountId) {
+        ux.action.start('Team Info');
+        apiURL = generateTeamInfoURL(teamId);
+        const {body: teamResults} = await this.heroku.get(apiURL);
+        ux.action.stop();
+        accountId = teamResults.id;
+      }
 
       ux.action.start('Retrieving');
-      apiURL = generateMonthyUsageURL(teamResults.id, begin, end);
+      apiURL = generateDailyUsageURL(accountId, begin, end);
       const {body: usageResults} = await this.heroku.get(apiURL);
       ux.action.stop();
 
@@ -48,13 +58,15 @@ class MonthlyCommand extends Command {
       usageResults.forEach(({apps, ...usageResult}) => {
         results = [...results, ...apps.map((appUsage) => ({
           ...appUsage,
-          month: usageResult.month,
+          date: usageResult.date,
           space: '',
+          connect: '',
           name: usageResult.name
         }))];
-        //-- add in the monthly total result
+        //-- add in the total result
         results.push({
           app_name: '-total-',
+          connect: '',
           ...usageResult
         });
       });
@@ -75,10 +87,10 @@ class MonthlyCommand extends Command {
       ux.table(stdOutResults, {
         name: {header: 'Team'},
         app_name: {header: 'App Name'},
-        month: {header: 'Date'},
+        date: {header: 'Date'},
         addons: {header: 'Add-Ons'},
         dynos: {header: 'Dynos'},
-        connect: {header: 'Connect'},
+        // connect: {header: 'Connect'},
         data: {header: 'Data'},
         partner: {header: 'Partner'},
         space: {header: 'Spaces'}
@@ -87,30 +99,35 @@ class MonthlyCommand extends Command {
 
     return Promise.resolve(results);
   }
+
+  static getYesterday() {
+    const result = new Date();
+    result.setDate(new Date().getDate() - 1);
+    return result;
+  }
 }
 
-MonthlyCommand.description = `Usage for an Enterprise Account / Team at a Monthly resolution.
+DailyCommand.description = `Usage for an Enterprise Account / Team at a Daily resolution.
 
 Team: Name of the Enterprise Account / Team
 App: Application Name
 Date: Date of the usage
 Addons: Total add-on credits used
-Connect: Heroku Connect rows managed
 Dynos: Dyno credits used
 Data: Add-On credits used for first party add-ons
 Partner: Add-On credits used for third party add-ons
 Space: Private Space credits used
 
-For more information, please see: https://devcenter.heroku.com/articles/platform-api-reference#enterprise-account-monthly-usage
+https://devcenter.heroku.com/articles/platform-api-reference#enterprise-account-daily-usage
 `;
 
-MonthlyCommand.flags = {
+DailyCommand.flags = {
   account: flags.string({char: 'a', description: 'Enterprise Account Id'}),
-  team: flags.string({char: 't', description: 'Heroku Team Id', required: true}),
+  team: flags.string({char: 't', description: 'Heroku Team Id'}),
   format: flags.string({char: 'f', description: 'format of output', default: 'human', options: ['human', 'json', 'csv']}),
-  begin: flags.string({char: 'b', description: 'Inclusive Start YYYY-MM to ask from'}),
-  end: flags.string({char: 'e', description: 'Inclusive End YYYY-MM to ask until'}),
+  begin: flags.string({char: 'b', description: 'Inclusive Start YYYY-MM-DD to ask from'}),
+  end: flags.string({char: 'e', description: 'Inclusive End YYYY-MM-DD to ask until'}),
   silent: flags.boolean({char: 's', hidden: true, description: 'Run silently for use in other methods'})
 };
 
-module.exports = MonthlyCommand;
+module.exports = DailyCommand;

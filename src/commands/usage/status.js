@@ -13,11 +13,11 @@ const AppsCommand = require('./app-list');
 const ObjectUtil = require('../../modules/ObjectUtil');
 const PrintUtil = require('../../modules/PrintUtil');
 
-class EverythingCommand extends Command {
+class StatusCommand extends Command {
   async run() {
     let results;
     let jsonResults = {};
-    const {flags: commandFlags} = this.parse(EverythingCommand);
+    const {flags: commandFlags} = this.parse(StatusCommand);
     const appFlag = commandFlags.app || null;
     const user = commandFlags.user || null;
     const team = commandFlags.team || null;
@@ -52,101 +52,13 @@ class EverythingCommand extends Command {
 
     /*
     results = require('../../../.tmp/psa_data.json');
-
-    ux.action.start('Retrieving info for dyno sizes');
-    const {body: dynoSizeBody} = await this.heroku.get('/dyno-sizes');
-    ux.action.stop();
-
-    const dynoSizes = dynoSizeBody.reduce((result, dynoSize) => {
-      result[dynoSize.name] = dynoSize;
-      return result;
-    }, {});
     */
 
-    try {
-      let appName;
-      let appRequestLabel;
-      let apiURL;
-      let dynoSizes;
-      
-      ux.action.start('Retrieving info for dyno sizes');
-      apiURL = '/dyno-sizes';
-      const {body: dynoSizeBody} = await this.heroku.get(apiURL);
-      ux.action.stop();
+    results = await this.getStatus(appList, true, true);
 
-      dynoSizes = dynoSizeBody.reduce((result, dynoSize) => {
-        result[dynoSize.name] = dynoSize;
-        return result;
-      }, {});
+    const allAddons = this.getAllAddons(results);
 
-      for (let index = 0; index < appList.length; index++) {
-        appName = appList[index];
-        appRequestLabel = `Retrieving info for ${CustomColors.app(appName)}`;
-
-        ux.action.start(appRequestLabel);
-        apiURL = `/apps/${appName}`;
-        const {body: appBody} = await this.heroku.get(apiURL);
-        
-        // ux.action.start(appRequestLabel, 'Add-Ons', actionOptions);
-        apiURL = `/apps/${appName}/addons`;
-        const {body: addonBody} = await this.heroku.get(apiURL);
-        
-        // ux.action.start(appRequestLabel, 'Attachments', actionOptions);
-        apiURL = `/apps/${appName}/addon-attachments`;
-        const {body: attachmentsBody} = await this.heroku.get(apiURL);
-        
-        // ux.action.start(appRequestLabel, 'Dynos', actionOptions);
-        apiURL = `/apps/${appName}/dynos`;
-        let {body: dynoBody} = await this.heroku.get(apiURL);
-
-        dynoBody = dynoBody.map((dynoInfo) => ({
-          ...dynoInfo,
-          sizeInfo: dynoSizes[dynoInfo.size]
-        }));
-        
-        ux.action.stop('done waiting');
-
-        results[appName] = {appBody, attachmentsBody, addonBody, dynoBody};
-      }
-
-      // fs.writeFileSync(
-      //   path.resolve('./data.json'),
-      //   JSON.stringify(results, null, 2),
-      //   {encoding: 'UTF8'}
-      // );
-      // cli.log('results are found');
-    } catch (error) {
-      if (error.statusCode === 401) {
-        cli.error('not logged in', {exit: 100});
-      }
-      throw error;
-    }
-
-    const attachedAddons = Object.keys(results)
-      .map((key) => results[key])
-      .reduce((allAttachments, app) => [
-        ...allAttachments,
-        ...app.attachmentsBody
-      ], [])
-      .filter((attachment) => attachment.app.name !== attachment.addon.app.name);
-
-    const allAddons = ObjectUtil.findUnique(
-      (addon) => addon.id,
-      Object.keys(results)
-        .map((key) => results[key])
-        .reduce((addonResults, app) => [
-          ...addonResults, ...app.addonBody
-        ], [])
-    );
-    
-    allAddons.forEach((addon) => {
-      //-- add a new property called addonAttachments
-      addon.addonAttachments = [
-        addon.app,
-        ...attachedAddons.filter((attachment) => attachment.addon.id === addon.id)
-          .map((matchedAttachment) => matchedAttachment.app)
-      ];
-    });
+    const allDynos = this.getAllDynos(results);
 
     jsonResults.addons = allAddons.map((addon) => ({
       appId: addon.app.id,
@@ -162,13 +74,6 @@ class EverythingCommand extends Command {
       updatedAt: localizeDate(addon.updated_at),
       createdAt: localizeDate(addon.created_at)
     }));
-
-    const allDynos = Object.keys(results)
-      .map((key) => results[key])
-      .reduce((dynoResults, app) => [
-        ...dynoResults,
-        ...app.dynoBody
-      ], []);
 
     jsonResults.dynos = allDynos.map((dyno) => ({
       dynoId: dyno.id,
@@ -252,18 +157,154 @@ class EverythingCommand extends Command {
 
     return Promise.resolve(results);
   }
+
+  /**
+   * Determines the status information for a list of apps
+   * @param {String[]} appList - list of applications we will consider
+   * @param {Boolean} fetchAddons - whether to fetch addon information
+   * @param {Boolean} fetchDynos - whether to fetch dyno information
+   */
+  async getStatus(appList, fetchAddons, fetchDynos) {
+    try {
+      const results = {};
+      let resultRecord;
+      let appName;
+      let appRequestLabel;
+      let apiURL;
+      let dynoSizes;
+      
+      ux.action.start('Retrieving info for dyno sizes');
+      apiURL = '/dyno-sizes';
+      const {body: dynoSizeBody} = await this.heroku.get(apiURL);
+      ux.action.stop();
+
+      dynoSizes = dynoSizeBody.reduce((result, dynoSize) => {
+        result[dynoSize.name] = dynoSize;
+        return result;
+      }, {});
+
+      for (let index = 0; index < appList.length; index++) {
+        resultRecord = {};
+
+        appName = appList[index];
+        appRequestLabel = `Retrieving info for ${CustomColors.app(appName)}`;
+
+        ux.action.start(appRequestLabel);
+        apiURL = `/apps/${appName}`;
+        const {body: appBody} = await this.heroku.get(apiURL);
+        resultRecord.appBody = appBody;
+        
+        if (fetchAddons) {
+          // ux.action.start(appRequestLabel, 'Add-Ons', actionOptions);
+          apiURL = `/apps/${appName}/addons`;
+          const {body: addonBody} = await this.heroku.get(apiURL);
+          resultRecord.addonBody = addonBody;
+          
+          // ux.action.start(appRequestLabel, 'Attachments', actionOptions);
+          apiURL = `/apps/${appName}/addon-attachments`;
+          const {body: attachmentsBody} = await this.heroku.get(apiURL);
+          resultRecord.attachmentsBody = attachmentsBody;
+        }
+        
+        if (fetchDynos) {
+          // ux.action.start(appRequestLabel, 'Dynos', actionOptions);
+          apiURL = `/apps/${appName}/dynos`;
+          let {body: dynoBody} = await this.heroku.get(apiURL);
+
+          dynoBody = dynoBody.map((dynoInfo) => ({
+            ...dynoInfo,
+            sizeInfo: dynoSizes[dynoInfo.size]
+          }));
+          resultRecord.dynoBody = dynoBody;
+        }
+        
+        ux.action.stop('done waiting');
+
+        results[appName] = resultRecord;
+      }
+
+      // fs.writeFileSync(
+      //   path.resolve('./data.json'),
+      //   JSON.stringify(results, null, 2),
+      //   {encoding: 'UTF8'}
+      // );
+
+      return results;
+    } catch (error) {
+      if (error.statusCode === 401) {
+        cli.error('not logged in', {exit: 100});
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Determines the list of all add-ons per the results
+   * @visibility private
+   * @param {*} results - results from getStatus
+   * @returns {[]} - collection of all addons
+   */
+  getAllAddons(results) {
+    const attachedAddons = Object.keys(results)
+      .map((key) => results[key])
+      .reduce((allAttachments, app) => [
+        ...allAttachments,
+        ...app.attachmentsBody
+      ], [])
+      .filter((attachment) => attachment.app.name !== attachment.addon.app.name);
+
+    const allAddons = ObjectUtil.findUnique(
+      (addon) => addon.id,
+      Object.keys(results)
+        .map((key) => results[key])
+        .reduce((addonResults, app) => [
+          ...addonResults, ...app.addonBody
+        ], [])
+    );
+    
+    allAddons.forEach((addon) => {
+      //-- add a new property called addonAttachments
+      addon.addonAttachments = [
+        addon.app,
+        ...attachedAddons.filter((attachment) => attachment.addon.id === addon.id)
+          .map((matchedAttachment) => matchedAttachment.app)
+      ];
+    });
+
+    return allAddons;
+  }
+
+  /**
+   * Determines the list of all dynos per the results.
+   * @visibility private
+   * @param {*} results - results from getStatus
+   * @returns {[]} - collection of all dynos
+   */
+  getAllDynos(results) {
+    const allDynos = Object.keys(results)
+      .map((key) => results[key])
+      .reduce((dynoResults, app) => [
+        ...dynoResults,
+        ...app.dynoBody
+      ], []);
+    return allDynos;
+  }
 }
 
-EverythingCommand.description = `(Demo) Determines dyno and add-on: usage and cost
-...
-Extra documentation goes here everything
+StatusCommand.description = `Current add-on / dyno / app status.
+
+(Please note that if neither a team or user is specified, all apps for the current user are determined)
+
+This includes the add-ons status, dynos status, and app status commands.
+
+Please see those commands for more detail.
 `;
 
-EverythingCommand.flags = {
+StatusCommand.flags = {
   app: flags.string({char: 'a', description: 'comma separated list of app names or ids'}),
   user: flags.string({char: 'u', description: 'account email or id or self'}),
   team: flags.string({char: 't', description: 'team name or id'}),
   format: flags.string({char: 'f', description: 'format of output', default: 'human', options: ['human', 'json', 'csv']})
 };
 
-module.exports = EverythingCommand;
+module.exports = StatusCommand;

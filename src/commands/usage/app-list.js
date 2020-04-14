@@ -14,10 +14,6 @@ const generateCurrentUserAppsURL = () => '/apps';
 class AppsCommand extends Command {
   async run() {
     let results;
-    // const {flags} = this.parse(AppsCommand);
-    // const name = flags.name || 'world';
-    // const saying = `hello name`;
-    // const msg = `${color.magenta(saying)} from your friends at ${CustomColors.heroku('heroku')}`;
 
     const {flags: commandFlags} = this.parse(AppsCommand);
     let team = commandFlags.team || null;
@@ -25,10 +21,6 @@ class AppsCommand extends Command {
     const format = commandFlags.format || 'human';
     let silent = commandFlags.silent || false;
 
-    const tableFormat = {
-      csv: format === 'csv',
-      'no-truncate': format === 'csv'
-    };
     const {apiURL, apiName} = AppsCommand.getTargetInfo(team, user);
 
     try {
@@ -76,16 +68,16 @@ class AppsCommand extends Command {
   }
 }
 
-AppsCommand.description = `Determines the list of apps available (by user or team)
-...
-Extra documentation goes here apps
+AppsCommand.description = `Determines the list of apps available: by user or team.
+
+(If no user or term is specified, then the apps available to the current user is provided)
 `;
 
 AppsCommand.flags = {
   user: flags.string({char: 'u', description: 'account email or id or self'}),
   team: flags.string({char: 't', description: 'team name or id'}),
-  silent: flags.boolean({char: 's', description: 'Run silently for use in other methods'}),
-  format: flags.string({char: 'f', description: 'format of output', default: 'human', options: ['human', 'json', 'csv']})
+  format: flags.string({char: 'f', description: 'format of output', default: 'human', options: ['human', 'json', 'csv']}),
+  silent: flags.boolean({char: 's', hidden: true, description: 'Run silently for use in other methods'})
 };
 
 module.exports = AppsCommand;
