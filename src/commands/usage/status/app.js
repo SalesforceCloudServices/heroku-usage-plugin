@@ -51,15 +51,16 @@ class AppStatusCommand extends StatusCommand {
     results = {};
     jsonResults = {};
 
-    /*
-    results = require('../../../.tmp/psa_data.json');
-    */
-
     results = await this.getStatus(appList, false, false);
+
+    let timestamp = new Date().toISOString();
+    const tableTimestamp = {};
+    if (format !== 'human') tableTimestamp.timestamp = {header: 'Timestamp'};
 
     jsonResults.apps = Object.keys(results)
       .map((key) => results[key])
       .map((app) => ({
+        timestamp,
         appId: app.appBody.id,
         appName: app.appBody.name,
         region: app.appBody.region ? app.appBody.region.name : '',
@@ -83,11 +84,10 @@ class AppStatusCommand extends StatusCommand {
         slugSize: {header: 'Slug Size'},
         space: {header: 'Space'},
         updatedAt: {header: 'Updated At'},
-        createdAt: {header: 'Created At'}
+        createdAt: {header: 'Created At'},
+        ...tableTimestamp
       }, tableFormat);
     }
-
-    // cli.log('success');
 
     return Promise.resolve(results);
   }

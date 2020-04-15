@@ -51,15 +51,16 @@ class DynoStatusCommand extends StatusCommand {
     results = {};
     jsonResults = {};
 
-    /*
-    results = require('../../../.tmp/psa_data.json');
-    */
-
     results = await this.getStatus(appList, false, true);
 
     const allDynos = this.getAllDynos(results);
 
+    let timestamp = new Date().toISOString();
+    const tableTimestamp = {};
+    if (format !== 'human') tableTimestamp.timestamp = {header: 'Timestamp'};
+
     jsonResults.dynos = allDynos.map((dyno) => ({
+      timestamp,
       dynoId: dyno.id,
       dynoName: dyno.name,
       appId: dyno.app.id,
@@ -89,11 +90,10 @@ class DynoStatusCommand extends StatusCommand {
         cost: {header: 'ListPrice'},
         unit: {header: 'Unit'},
         updatedAt: {header: 'Updated At'},
-        createdAt: {header: 'Created At'}
+        createdAt: {header: 'Created At'},
+        ...tableTimestamp
       }, tableFormat);
     }
-
-    // cli.log('success');
 
     return Promise.resolve(results);
   }

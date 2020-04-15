@@ -51,15 +51,16 @@ class AddonStatusCommand extends StatusCommand {
     results = {};
     jsonResults = {};
 
-    /*
-    results = require('../../../.tmp/psa_data.json');
-    */
-
     results = await this.getStatus(appList, true, false);
 
     const allAddons = this.getAllAddons(results);
 
+    let timestamp = new Date().toISOString();
+    const tableTimestamp = {};
+    if (format !== 'human') tableTimestamp.timestamp = {header: 'Timestamp'};
+
     jsonResults.addons = allAddons.map((addon) => ({
+      timestamp,
       appId: addon.app.id,
       appName: addon.app.name,
       name: addon.name,
@@ -89,11 +90,10 @@ class AddonStatusCommand extends StatusCommand {
         cost: {header: 'ListPrice'},
         unit: {header: 'Unit'},
         updatedAt: {header: 'Updated At'},
-        createdAt: {header: 'Created At'}
+        createdAt: {header: 'Created At'},
+        ...tableTimestamp
       }, tableFormat);
     }
-
-    // cli.log('success');
 
     return Promise.resolve(results);
   }

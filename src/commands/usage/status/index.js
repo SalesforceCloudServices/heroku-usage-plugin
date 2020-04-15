@@ -50,17 +50,18 @@ class StatusCommand extends Command {
     results = {};
     jsonResults = {};
 
-    /*
-    results = require('../../../.tmp/psa_data.json');
-    */
-
     results = await this.getStatus(appList, true, true);
 
     const allAddons = this.getAllAddons(results);
 
     const allDynos = this.getAllDynos(results);
 
+    let timestamp = new Date().toISOString();
+    const tableTimestamp = {};
+    if (format !== 'human') tableTimestamp.timestamp = {header: 'Timestamp'};
+
     jsonResults.addons = allAddons.map((addon) => ({
+      timestamp,
       appId: addon.app.id,
       appName: addon.app.name,
       name: addon.name,
@@ -76,6 +77,7 @@ class StatusCommand extends Command {
     }));
 
     jsonResults.dynos = allDynos.map((dyno) => ({
+      timestamp,
       dynoId: dyno.id,
       dynoName: dyno.name,
       appId: dyno.app.id,
@@ -93,6 +95,7 @@ class StatusCommand extends Command {
     jsonResults.apps = Object.keys(results)
       .map((key) => results[key])
       .map((app) => ({
+        timestamp,
         appId: app.appBody.id,
         appName: app.appBody.name,
         region: app.appBody.region ? app.appBody.region.name : '',
@@ -118,7 +121,8 @@ class StatusCommand extends Command {
         cost: {header: 'ListPrice'},
         unit: {header: 'Unit'},
         updatedAt: {header: 'Updated At'},
-        createdAt: {header: 'Created At'}
+        createdAt: {header: 'Created At'},
+        ...tableTimestamp
       }, tableFormat);
 
       cli.log('\n');
@@ -135,7 +139,8 @@ class StatusCommand extends Command {
         cost: {header: 'ListPrice'},
         unit: {header: 'Unit'},
         updatedAt: {header: 'Updated At'},
-        createdAt: {header: 'Created At'}
+        createdAt: {header: 'Created At'},
+        ...tableTimestamp
       }, tableFormat);
 
       cli.log('\n');
@@ -149,7 +154,8 @@ class StatusCommand extends Command {
         slugSize: {header: 'Slug Size'},
         space: {header: 'Space'},
         updatedAt: {header: 'Updated At'},
-        createdAt: {header: 'Created At'}
+        createdAt: {header: 'Created At'},
+        ...tableTimestamp
       }, tableFormat);
     }
 
@@ -165,14 +171,16 @@ class StatusCommand extends Command {
    * @param {Boolean} fetchDynos - whether to fetch dyno information
    */
   async getStatus(appList, fetchAddons, fetchDynos) {
+    // return Promise.resolve(require(path.resolve('./data.json')));
+    
     try {
-      const results = {};
+      let results = {};
       let resultRecord;
       let appName;
       let appRequestLabel;
       let apiURL;
       let dynoSizes;
-      
+
       ux.action.start('Retrieving info for dyno sizes');
       apiURL = '/dyno-sizes';
       const {body: dynoSizeBody} = await this.heroku.get(apiURL);
