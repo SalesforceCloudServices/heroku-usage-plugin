@@ -244,7 +244,6 @@ class StatusCommand extends Command {
       }
       throw error;
     }
-    
   }
 
   /**
