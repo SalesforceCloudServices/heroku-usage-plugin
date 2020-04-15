@@ -13,36 +13,39 @@ Simple plugin to provide app / addon / dyno heroku usage for users / teams / ent
 * [Commands](#commands)
 <!-- tocstop -->
 # Usage
+
+Install through `heroku plugins:install heroku-usage-plugin`
+
 <!-- usage -->
 ```sh-session
 $ npm install -g heroku-usage-plugin
-$ oclif-example COMMAND
+$ heroku COMMAND
 running command...
-$ oclif-example (-v|--version|version)
-heroku-usage-plugin/1.0.0 darwin-x64 node-v12.16.1
-$ oclif-example --help [COMMAND]
+$ heroku (-v|--version|version)
+heroku-usage-plugin/1.0.2 darwin-x64 node-v12.16.1
+$ heroku --help [COMMAND]
 USAGE
-  $ oclif-example COMMAND
+  $ heroku COMMAND
 ...
 ```
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`oclif-example usage:daily`](#oclif-example-usagedaily)
-* [`oclif-example usage:list:apps`](#oclif-example-usagelistapps)
-* [`oclif-example usage:monthly`](#oclif-example-usagemonthly)
-* [`oclif-example usage:status`](#oclif-example-usagestatus)
-* [`oclif-example usage:status:addon`](#oclif-example-usagestatusaddon)
-* [`oclif-example usage:status:app`](#oclif-example-usagestatusapp)
-* [`oclif-example usage:status:dyno`](#oclif-example-usagestatusdyno)
+* [`heroku usage:daily`](#heroku-usagedaily)
+* [`heroku usage:list:apps`](#heroku-usagelistapps)
+* [`heroku usage:monthly`](#heroku-usagemonthly)
+* [`heroku usage:status`](#heroku-usagestatus)
+* [`heroku usage:status:addon`](#heroku-usagestatusaddon)
+* [`heroku usage:status:app`](#heroku-usagestatusapp)
+* [`heroku usage:status:dyno`](#heroku-usagestatusdyno)
 
-## `oclif-example usage:daily`
+## `heroku usage:daily`
 
 Usage for an Enterprise Account / Team at a Daily resolution.
 
 ```
 USAGE
-  $ oclif-example usage:daily
+  $ heroku usage:daily
 
 OPTIONS
   -a, --account=account        Enterprise Account Id
@@ -64,15 +67,15 @@ DESCRIPTION
   https://devcenter.heroku.com/articles/platform-api-reference#enterprise-account-daily-usage
 ```
 
-_See code: [src/commands/usage/daily.js](https://github.com/SalesforceCloudServices/heroku-usage-plugin/blob/v1.0.0/src/commands/usage/daily.js)_
+_See code: [src/commands/usage/daily.js](https://github.com/SalesforceCloudServices/heroku-usage-plugin/blob/v1.0.2/src/commands/usage/daily.js)_
 
-## `oclif-example usage:list:apps`
+## `heroku usage:list:apps`
 
 Determines the list of apps available: by user or team.
 
 ```
 USAGE
-  $ oclif-example usage:list:apps
+  $ heroku usage:list:apps
 
 OPTIONS
   -f, --format=human|json|csv  [default: human] format of output
@@ -83,15 +86,15 @@ DESCRIPTION
   (If no user or term is specified, then the apps available to the current user is provided)
 ```
 
-_See code: [src/commands/usage/list/apps.js](https://github.com/SalesforceCloudServices/heroku-usage-plugin/blob/v1.0.0/src/commands/usage/list/apps.js)_
+_See code: [src/commands/usage/list/apps.js](https://github.com/SalesforceCloudServices/heroku-usage-plugin/blob/v1.0.2/src/commands/usage/list/apps.js)_
 
-## `oclif-example usage:monthly`
+## `heroku usage:monthly`
 
 Usage for an Enterprise Account / Team at a Monthly resolution.
 
 ```
 USAGE
-  $ oclif-example usage:monthly
+  $ heroku usage:monthly
 
 OPTIONS
   -a, --account=account        Enterprise Account Id
@@ -115,15 +118,15 @@ DESCRIPTION
   https://devcenter.heroku.com/articles/platform-api-reference#enterprise-account-monthly-usage
 ```
 
-_See code: [src/commands/usage/monthly.js](https://github.com/SalesforceCloudServices/heroku-usage-plugin/blob/v1.0.0/src/commands/usage/monthly.js)_
+_See code: [src/commands/usage/monthly.js](https://github.com/SalesforceCloudServices/heroku-usage-plugin/blob/v1.0.2/src/commands/usage/monthly.js)_
 
-## `oclif-example usage:status`
+## `heroku usage:status`
 
 Current add-on / dyno / app status.
 
 ```
 USAGE
-  $ oclif-example usage:status
+  $ heroku usage:status
 
 OPTIONS
   -a, --app=app                comma separated list of app names or ids
@@ -139,15 +142,15 @@ DESCRIPTION
   Please see those commands for more detail.
 ```
 
-_See code: [src/commands/usage/status/index.js](https://github.com/SalesforceCloudServices/heroku-usage-plugin/blob/v1.0.0/src/commands/usage/status/index.js)_
+_See code: [src/commands/usage/status/index.js](https://github.com/SalesforceCloudServices/heroku-usage-plugin/blob/v1.0.2/src/commands/usage/status/index.js)_
 
-## `oclif-example usage:status:addon`
+## `heroku usage:status:addon`
 
 Add-Ons leveraged for a set of Heroku Apps.
 
 ```
 USAGE
-  $ oclif-example usage:status:addon
+  $ heroku usage:status:addon
 
 OPTIONS
   -a, --app=app                comma separated list of app names or ids
@@ -181,15 +184,15 @@ DESCRIPTION
   https://devcenter.heroku.com/articles/platform-api-reference#add-on
 ```
 
-_See code: [src/commands/usage/status/addon.js](https://github.com/SalesforceCloudServices/heroku-usage-plugin/blob/v1.0.0/src/commands/usage/status/addon.js)_
+_See code: [src/commands/usage/status/addon.js](https://github.com/SalesforceCloudServices/heroku-usage-plugin/blob/v1.0.2/src/commands/usage/status/addon.js)_
 
-## `oclif-example usage:status:app`
+## `heroku usage:status:app`
 
 Status for a set of heroku apps.
 
 ```
 USAGE
-  $ oclif-example usage:status:app
+  $ heroku usage:status:app
 
 OPTIONS
   -a, --app=app                comma separated list of app names or ids
@@ -213,15 +216,15 @@ DESCRIPTION
   https://devcenter.heroku.com/articles/platform-api-reference#app
 ```
 
-_See code: [src/commands/usage/status/app.js](https://github.com/SalesforceCloudServices/heroku-usage-plugin/blob/v1.0.0/src/commands/usage/status/app.js)_
+_See code: [src/commands/usage/status/app.js](https://github.com/SalesforceCloudServices/heroku-usage-plugin/blob/v1.0.2/src/commands/usage/status/app.js)_
 
-## `oclif-example usage:status:dyno`
+## `heroku usage:status:dyno`
 
 Dynos leveraged for a set of heroku apps.
 
 ```
 USAGE
-  $ oclif-example usage:status:dyno
+  $ heroku usage:status:dyno
 
 OPTIONS
   -a, --app=app                comma separated list of app names or ids
@@ -250,5 +253,5 @@ DESCRIPTION
   https://devcenter.heroku.com/articles/platform-api-reference#dyno
 ```
 
-_See code: [src/commands/usage/status/dyno.js](https://github.com/SalesforceCloudServices/heroku-usage-plugin/blob/v1.0.0/src/commands/usage/status/dyno.js)_
+_See code: [src/commands/usage/status/dyno.js](https://github.com/SalesforceCloudServices/heroku-usage-plugin/blob/v1.0.2/src/commands/usage/status/dyno.js)_
 <!-- commandsstop -->
