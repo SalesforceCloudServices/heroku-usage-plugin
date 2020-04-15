@@ -3,7 +3,7 @@
 # sets a screen session for the current project
 
 # sets the current window's name
-screen -X title "appUsage"
+screen -X title "appUsagePlugin"
 
 # uncomment below to make the tabs only run those commands
 # but note that restarting will lose that tab
