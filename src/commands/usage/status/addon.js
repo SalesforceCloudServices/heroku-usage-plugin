@@ -83,7 +83,7 @@ class AddonStatusCommand extends StatusCommand {
         // addonId: {header: 'Add-On Id'},
         // appId: {header: 'App Id'},
         appName: {header: 'App Name'},
-        // name: {header: 'Add-On Name'},
+        name: {header: 'Add-On Name'},
         service: {header: 'Service'},
         attachments: {header: '# Attachments'},
         planName: {header: 'Plan'},
@@ -114,6 +114,7 @@ The ListPrice of the Add-On is likely not the price being paid.
 However, this price can often directionally which Add-Ons are more expensive than others.
 
 App Name: Name of the Heroku Application
+Add-On Name: Specific name for this add-on
 Service: Name of the Add-On Service
 Attachments: # of apps this Add-On is attached to
 Plan: Name of the Plan this Add-On is using.

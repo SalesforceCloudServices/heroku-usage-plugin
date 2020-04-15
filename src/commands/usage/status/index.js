@@ -114,7 +114,7 @@ class StatusCommand extends Command {
         // addonId: {header: 'Add-On Id'},
         // appId: {header: 'App Id'},
         appName: {header: 'App Name'},
-        // name: {header: 'Add-On Name'},
+        name: {header: 'Add-On Name'},
         service: {header: 'Service'},
         attachments: {header: '# Attachments'},
         planName: {header: 'Plan'},
@@ -244,6 +244,7 @@ class StatusCommand extends Command {
       }
       throw error;
     }
+    
   }
 
   /**

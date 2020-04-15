@@ -22,7 +22,7 @@ $ npm install -g heroku-usage-plugin
 $ heroku COMMAND
 running command...
 $ heroku (-v|--version|version)
-heroku-usage-plugin/1.0.2 darwin-x64 node-v12.16.1
+heroku-usage-plugin/1.1.0 darwin-x64 node-v12.16.1
 $ heroku --help [COMMAND]
 USAGE
   $ heroku COMMAND
@@ -67,7 +67,7 @@ DESCRIPTION
   https://devcenter.heroku.com/articles/platform-api-reference#enterprise-account-daily-usage
 ```
 
-_See code: [src/commands/usage/daily.js](https://github.com/SalesforceCloudServices/heroku-usage-plugin/blob/v1.0.2/src/commands/usage/daily.js)_
+_See code: [src/commands/usage/daily.js](https://github.com/SalesforceCloudServices/heroku-usage-plugin/blob/v1.1.0/src/commands/usage/daily.js)_
 
 ## `heroku usage:list:apps`
 
@@ -86,7 +86,7 @@ DESCRIPTION
   (If no user or term is specified, then the apps available to the current user is provided)
 ```
 
-_See code: [src/commands/usage/list/apps.js](https://github.com/SalesforceCloudServices/heroku-usage-plugin/blob/v1.0.2/src/commands/usage/list/apps.js)_
+_See code: [src/commands/usage/list/apps.js](https://github.com/SalesforceCloudServices/heroku-usage-plugin/blob/v1.1.0/src/commands/usage/list/apps.js)_
 
 ## `heroku usage:monthly`
 
@@ -118,7 +118,7 @@ DESCRIPTION
   https://devcenter.heroku.com/articles/platform-api-reference#enterprise-account-monthly-usage
 ```
 
-_See code: [src/commands/usage/monthly.js](https://github.com/SalesforceCloudServices/heroku-usage-plugin/blob/v1.0.2/src/commands/usage/monthly.js)_
+_See code: [src/commands/usage/monthly.js](https://github.com/SalesforceCloudServices/heroku-usage-plugin/blob/v1.1.0/src/commands/usage/monthly.js)_
 
 ## `heroku usage:status`
 
@@ -142,7 +142,7 @@ DESCRIPTION
   Please see those commands for more detail.
 ```
 
-_See code: [src/commands/usage/status/index.js](https://github.com/SalesforceCloudServices/heroku-usage-plugin/blob/v1.0.2/src/commands/usage/status/index.js)_
+_See code: [src/commands/usage/status/index.js](https://github.com/SalesforceCloudServices/heroku-usage-plugin/blob/v1.1.0/src/commands/usage/status/index.js)_
 
 ## `heroku usage:status:addon`
 
@@ -184,7 +184,7 @@ DESCRIPTION
   https://devcenter.heroku.com/articles/platform-api-reference#add-on
 ```
 
-_See code: [src/commands/usage/status/addon.js](https://github.com/SalesforceCloudServices/heroku-usage-plugin/blob/v1.0.2/src/commands/usage/status/addon.js)_
+_See code: [src/commands/usage/status/addon.js](https://github.com/SalesforceCloudServices/heroku-usage-plugin/blob/v1.1.0/src/commands/usage/status/addon.js)_
 
 ## `heroku usage:status:app`
 
@@ -216,7 +216,7 @@ DESCRIPTION
   https://devcenter.heroku.com/articles/platform-api-reference#app
 ```
 
-_See code: [src/commands/usage/status/app.js](https://github.com/SalesforceCloudServices/heroku-usage-plugin/blob/v1.0.2/src/commands/usage/status/app.js)_
+_See code: [src/commands/usage/status/app.js](https://github.com/SalesforceCloudServices/heroku-usage-plugin/blob/v1.1.0/src/commands/usage/status/app.js)_
 
 ## `heroku usage:status:dyno`
 
@@ -253,5 +253,5 @@ DESCRIPTION
   https://devcenter.heroku.com/articles/platform-api-reference#dyno
 ```
 
-_See code: [src/commands/usage/status/dyno.js](https://github.com/SalesforceCloudServices/heroku-usage-plugin/blob/v1.0.2/src/commands/usage/status/dyno.js)_
+_See code: [src/commands/usage/status/dyno.js](https://github.com/SalesforceCloudServices/heroku-usage-plugin/blob/v1.1.0/src/commands/usage/status/dyno.js)_
 <!-- commandsstop -->
