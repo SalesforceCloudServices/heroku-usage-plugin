@@ -23,6 +23,8 @@ class DynoStatusCommand extends StatusCommand {
     const user = commandFlags.user || null;
     const team = commandFlags.team || null;
     const format = commandFlags.format || 'human';
+    const cache = commandFlags.cache || false;
+    
     const tableFormat = {
       csv: format === 'csv',
       'no-truncate': format === 'csv'
@@ -51,7 +53,7 @@ class DynoStatusCommand extends StatusCommand {
     results = {};
     jsonResults = {};
 
-    results = await this.getStatus(appList, false, true);
+    results = await this.getStatus(appList, false, true, cache);
 
     const allDynos = this.getAllDynos(results);
 
@@ -69,7 +71,7 @@ class DynoStatusCommand extends StatusCommand {
       state: dyno.state,
       type: dyno.type,
       units: dyno.sizeInfo.dyno_units,
-      cost: printCost(dyno.sizeInfo.cost),
+      listPrice: printCost(dyno.sizeInfo.cost),
       unit: printUnit(dyno.sizeInfo.cost),
       updatedAt: localizeDate(dyno.updated_at),
       createdAt: localizeDate(dyno.created_at)
@@ -87,7 +89,7 @@ class DynoStatusCommand extends StatusCommand {
         state: {header: 'State'},
         type: {header: 'Type'},
         units: {header: 'Units'},
-        cost: {header: 'ListPrice'},
+        listPrice: {header: 'ListPrice'},
         unit: {header: 'Unit'},
         updatedAt: {header: 'Updated At'},
         createdAt: {header: 'Created At'},
@@ -125,7 +127,8 @@ DynoStatusCommand.flags = {
   app: flags.string({char: 'a', description: 'comma separated list of app names or ids'}),
   user: flags.string({char: 'u', description: 'account email or user id'}),
   team: flags.string({char: 't', description: 'team name or id'}),
-  format: flags.string({char: 'f', description: 'format of output', default: 'human', options: ['human', 'json', 'csv']})
+  format: flags.string({char: 'f', description: 'format of output', default: 'human', options: ['human', 'json', 'csv']}),
+  cache: flags.boolean({hidden: true, description: 'store the app results into a cache file ./data.json'})
 };
 
 module.exports = DynoStatusCommand;

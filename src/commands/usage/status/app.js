@@ -23,6 +23,8 @@ class AppStatusCommand extends StatusCommand {
     const user = commandFlags.user || null;
     const team = commandFlags.team || null;
     const format = commandFlags.format || 'human';
+    const cache = commandFlags.cache || false;
+    
     const tableFormat = {
       csv: format === 'csv',
       'no-truncate': format === 'csv'
@@ -51,7 +53,7 @@ class AppStatusCommand extends StatusCommand {
     results = {};
     jsonResults = {};
 
-    results = await this.getStatus(appList, false, false);
+    results = await this.getStatus(appList, false, false, cache);
 
     let timestamp = new Date().toISOString();
     const tableTimestamp = {};
@@ -114,7 +116,8 @@ AppStatusCommand.flags = {
   app: flags.string({char: 'a', description: 'comma separated list of app names or ids'}),
   user: flags.string({char: 'u', description: 'account email or user id'}),
   team: flags.string({char: 't', description: 'team name or id'}),
-  format: flags.string({char: 'f', description: 'format of output', default: 'human', options: ['human', 'json', 'csv']})
+  format: flags.string({char: 'f', description: 'format of output', default: 'human', options: ['human', 'json', 'csv']}),
+  cache: flags.boolean({hidden: true, description: 'store the app results into a cache file ./data.json'})
 };
 
 module.exports = AppStatusCommand;

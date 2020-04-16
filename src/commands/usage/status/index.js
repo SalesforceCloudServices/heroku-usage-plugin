@@ -22,9 +22,7 @@ class StatusCommand extends Command {
     const user = commandFlags.user || null;
     const team = commandFlags.team || null;
     const format = commandFlags.format || 'human';
-
     const cache = commandFlags.cache || false;
-    const useCache = commandFlags['use-cache'] || false;
 
     const tableFormat = {
       csv: format === 'csv',
@@ -54,7 +52,7 @@ class StatusCommand extends Command {
     results = {};
     jsonResults = {};
 
-    results = await this.getStatus(appList, true, true, cache, useCache);
+    results = await this.getStatus(appList, true, true, cache);
 
     const allAddons = this.getAllAddons(results);
 
@@ -68,12 +66,13 @@ class StatusCommand extends Command {
       timestamp,
       appId: addon.app.id,
       appName: addon.app.name,
-      name: addon.name,
+      addonName: addon.name,
       service: addon.addon_service.name,
       addonId: addon.id,
-      attachments: localizeNumber(addon.addonAttachments.length),
+      numAttachments: localizeNumber(addon.addonAttachments.length),
+      attachmentApplications: addon.addonAttachments,
       planName: printPlan(addon.plan.name),
-      cost: printCost(addon.billed_price),
+      listPrice: printCost(addon.billed_price),
       unit: printUnit(addon.billed_price),
       state: addon.state,
       updatedAt: localizeDate(addon.updated_at),
@@ -90,7 +89,7 @@ class StatusCommand extends Command {
       state: dyno.state,
       type: dyno.type,
       units: dyno.sizeInfo.dyno_units,
-      cost: printCost(dyno.sizeInfo.cost),
+      listPrice: printCost(dyno.sizeInfo.cost),
       unit: printUnit(dyno.sizeInfo.cost),
       updatedAt: localizeDate(dyno.updated_at),
       createdAt: localizeDate(dyno.created_at)
@@ -118,11 +117,11 @@ class StatusCommand extends Command {
         // addonId: {header: 'Add-On Id'},
         // appId: {header: 'App Id'},
         appName: {header: 'App Name'},
-        name: {header: 'Add-On Name'},
+        addonName: {header: 'Add-On Name'},
         service: {header: 'Service'},
-        attachments: {header: '# Attachments'},
+        numAttachments: {header: '# Attachments'},
         planName: {header: 'Plan'},
-        cost: {header: 'ListPrice'},
+        listPrice: {header: 'ListPrice'},
         unit: {header: 'Unit'},
         updatedAt: {header: 'Updated At'},
         createdAt: {header: 'Created At'},
@@ -140,7 +139,7 @@ class StatusCommand extends Command {
         state: {header: 'State'},
         type: {header: 'Type'},
         units: {header: 'Units'},
-        cost: {header: 'ListPrice'},
+        listPrice: {header: 'ListPrice'},
         unit: {header: 'Unit'},
         updatedAt: {header: 'Updated At'},
         createdAt: {header: 'Created At'},

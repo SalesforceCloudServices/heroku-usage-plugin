@@ -23,6 +23,8 @@ class AddonStatusCommand extends StatusCommand {
     const user = commandFlags.user || null;
     const team = commandFlags.team || null;
     const format = commandFlags.format || 'human';
+    const cache = commandFlags.cache || false;
+
     const tableFormat = {
       csv: format === 'csv',
       'no-truncate': format === 'csv'
@@ -51,7 +53,7 @@ class AddonStatusCommand extends StatusCommand {
     results = {};
     jsonResults = {};
 
-    results = await this.getStatus(appList, true, false);
+    results = await this.getStatus(appList, true, false, cache);
 
     const allAddons = this.getAllAddons(results);
 
@@ -63,13 +65,13 @@ class AddonStatusCommand extends StatusCommand {
       timestamp,
       appId: addon.app.id,
       appName: addon.app.name,
-      name: addon.name,
+      addonName: addon.name,
       service: addon.addon_service.name,
       addonId: addon.id,
-      attachments: localizeNumber(addon.addonAttachments.length),
+      numAttachments: localizeNumber(addon.addonAttachments.length),
       attachmentApplications: addon.addonAttachments,
       planName: printPlan(addon.plan.name),
-      cost: printCost(addon.billed_price),
+      listPrice: printCost(addon.billed_price),
       unit: printUnit(addon.billed_price),
       state: addon.state,
       updatedAt: localizeDate(addon.updated_at),
@@ -83,11 +85,11 @@ class AddonStatusCommand extends StatusCommand {
         // addonId: {header: 'Add-On Id'},
         // appId: {header: 'App Id'},
         appName: {header: 'App Name'},
-        name: {header: 'Add-On Name'},
+        addonName: {header: 'Add-On Name'},
         service: {header: 'Service'},
-        attachments: {header: '# Attachments'},
+        numAttachments: {header: '# Attachments'},
         planName: {header: 'Plan'},
-        cost: {header: 'ListPrice'},
+        listPrice: {header: 'ListPrice'},
         unit: {header: 'Unit'},
         updatedAt: {header: 'Updated At'},
         createdAt: {header: 'Created At'},
@@ -131,7 +133,8 @@ AddonStatusCommand.flags = {
   app: flags.string({char: 'a', description: 'comma separated list of app names or ids'}),
   user: flags.string({char: 'u', description: 'account email or user id'}),
   team: flags.string({char: 't', description: 'team name or id'}),
-  format: flags.string({char: 'f', description: 'format of output', default: 'human', options: ['human', 'json', 'csv']})
+  format: flags.string({char: 'f', description: 'format of output', default: 'human', options: ['human', 'json', 'csv']}),
+  cache: flags.boolean({hidden: true, description: 'store the app results into a cache file ./data.json'})
 };
 
 module.exports = AddonStatusCommand;
