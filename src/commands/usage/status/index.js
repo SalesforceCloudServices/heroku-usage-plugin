@@ -22,6 +22,10 @@ class StatusCommand extends Command {
     const user = commandFlags.user || null;
     const team = commandFlags.team || null;
     const format = commandFlags.format || 'human';
+
+    const cache = commandFlags.cache || false;
+    const useCache = commandFlags['use-cache'] || false;
+
     const tableFormat = {
       csv: format === 'csv',
       'no-truncate': format === 'csv'
@@ -50,7 +54,7 @@ class StatusCommand extends Command {
     results = {};
     jsonResults = {};
 
-    results = await this.getStatus(appList, true, true);
+    results = await this.getStatus(appList, true, true, cache, useCache);
 
     const allAddons = this.getAllAddons(results);
 
@@ -169,9 +173,19 @@ class StatusCommand extends Command {
    * @param {String[]} appList - list of applications we will consider
    * @param {Boolean} fetchAddons - whether to fetch addon information
    * @param {Boolean} fetchDynos - whether to fetch dyno information
+   * @param {Boolean} cache - whether to cache the results into a file data.json
+   * @param {Boolean} useCache - whether to load the results from file instead of making requests
    */
-  async getStatus(appList, fetchAddons, fetchDynos) {
-    // return Promise.resolve(require(path.resolve('./data.json')));
+  async getStatus(appList, fetchAddons, fetchDynos, cache, useCache) {
+
+    const cachePath = path.resolve('./data.json');
+    if (useCache) {
+      if (fs.pathExistsSync(cachePath)) {
+        return Promise.resolve(require(path.resolve('./data.json')));
+      } else {
+        return Promise.reject(new Error(`cache flag was requested but no cache file found:${cachePath}`));
+      }
+    }
     
     try {
       let results = {};
@@ -229,6 +243,14 @@ class StatusCommand extends Command {
         ux.action.stop('done waiting');
 
         results[appName] = resultRecord;
+      }
+
+      if (cache) {
+        fs.writeFileSync(
+          path.resolve(cachePath),
+          JSON.stringify(results, null, 2),
+          {encoding: 'UTF8'}
+        );
       }
 
       // fs.writeFileSync(
@@ -312,7 +334,9 @@ StatusCommand.flags = {
   app: flags.string({char: 'a', description: 'comma separated list of app names or ids'}),
   user: flags.string({char: 'u', description: 'account email or user id'}),
   team: flags.string({char: 't', description: 'team name or id'}),
-  format: flags.string({char: 'f', description: 'format of output', default: 'human', options: ['human', 'json', 'csv']})
+  format: flags.string({char: 'f', description: 'format of output', default: 'human', options: ['human', 'json', 'csv']}),
+  cache: flags.boolean({hidden: true, description: 'store the app results into a cache file ./data.json'}),
+  'use-cache': flags.boolean({hidden: true, description: 'load the app results from a cache file ./data.json instead of requesting'})
 };
 
 module.exports = StatusCommand;
