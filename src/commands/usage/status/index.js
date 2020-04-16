@@ -174,16 +174,14 @@ class StatusCommand extends Command {
    * @param {Boolean} fetchAddons - whether to fetch addon information
    * @param {Boolean} fetchDynos - whether to fetch dyno information
    * @param {Boolean} cache - whether to cache the results into a file data.json
-   * @param {Boolean} useCache - whether to load the results from file instead of making requests
    */
-  async getStatus(appList, fetchAddons, fetchDynos, cache, useCache) {
-
+  async getStatus(appList, fetchAddons, fetchDynos, cache) {
     const cachePath = path.resolve('./data.json');
-    if (useCache) {
+    if (cache) {
       if (fs.pathExistsSync(cachePath)) {
         return Promise.resolve(require(path.resolve('./data.json')));
-      } else {
-        return Promise.reject(new Error(`cache flag was requested but no cache file found:${cachePath}`));
+      // } else {
+      //  return Promise.reject(new Error(`cache flag was requested but no cache file found:${cachePath}`));
       }
     }
     
@@ -252,12 +250,6 @@ class StatusCommand extends Command {
           {encoding: 'UTF8'}
         );
       }
-
-      // fs.writeFileSync(
-      //   path.resolve('./data.json'),
-      //   JSON.stringify(results, null, 2),
-      //   {encoding: 'UTF8'}
-      // );
 
       return results;
     } catch (error) {
@@ -335,8 +327,7 @@ StatusCommand.flags = {
   user: flags.string({char: 'u', description: 'account email or user id'}),
   team: flags.string({char: 't', description: 'team name or id'}),
   format: flags.string({char: 'f', description: 'format of output', default: 'human', options: ['human', 'json', 'csv']}),
-  cache: flags.boolean({hidden: true, description: 'store the app results into a cache file ./data.json'}),
-  'use-cache': flags.boolean({hidden: true, description: 'load the app results from a cache file ./data.json instead of requesting'})
+  cache: flags.boolean({hidden: true, description: 'store the app results into a cache file ./data.json'})
 };
 
 module.exports = StatusCommand;
