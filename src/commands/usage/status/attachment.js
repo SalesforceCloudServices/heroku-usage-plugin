@@ -86,8 +86,8 @@ class AddonStatusCommand extends StatusCommand {
       cli.log(JSON.stringify(jsonResults, null, 2));
     } else {
       ux.table(jsonResults.attachments, {
-        attachmentName: {header: 'Attachment Name'},
         addonName: {header: 'Add-On Name'},
+        attachmentName: {header: 'Attachment Name'},
         // attachmentId: {header: ''},
         relationship: {header: 'Relationship'},
         // addonId: {header: ''},

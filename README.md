@@ -123,7 +123,7 @@ _See code: [src/commands/usage/monthly.js](https://github.com/SalesforceCloudSer
 
 ## `heroku usage:status`
 
-Current add-on / dyno / app status.
+Current add-on / attachment / dyno / app status.
 
 ```
 USAGE
@@ -138,7 +138,7 @@ OPTIONS
 DESCRIPTION
   (Please note that if neither a team or user is specified, all apps for the current user are determined)
 
-  This includes the add-ons status, dynos status, and app status commands.
+  This includes the add-ons status, attachment status, dynos status, and app status commands.
 
   Please see those commands for more detail.
 ```

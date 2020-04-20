@@ -79,6 +79,29 @@ class StatusCommand extends Command {
       createdAt: localizeDate(addon.created_at)
     }));
 
+    jsonResults.attachments = Object.keys(results)
+      .map((key) => results[key])
+      .reduce((attachmentsResults, appInfo) => [
+        ...attachmentsResults,
+        ...appInfo.attachmentsBody.map((attachment) => ({
+          timestamp,
+          attachmentId: attachment.id,
+          attachmentName: attachment.name,
+          addonId: attachment.addon.id,
+          addonName: attachment.addon.name,
+          webURL: attachment.web_url,
+          logInputURL: attachment.log_input_url,
+          namespace: attachment.namespace,
+          owningAppId: attachment.app.id,
+          owningAppName: attachment.app.name,
+          attachedAppId: attachment.addon.app.id,
+          attachedAppName: attachment.addon.app.name,
+          createdAt: localizeDate(attachment.created_at),
+          updatedAt: localizeDate(attachment.updated_at),
+          relationship: attachment.addon.app.id === attachment.app.id ? 'direct' : 'attachment'
+        }))
+      ], []);
+
     jsonResults.dynos = allDynos.map((dyno) => ({
       timestamp,
       dynoId: dyno.id,
@@ -123,6 +146,25 @@ class StatusCommand extends Command {
         planName: {header: 'Plan'},
         listPrice: {header: 'ListPrice'},
         unit: {header: 'Unit'},
+        updatedAt: {header: 'Updated At'},
+        createdAt: {header: 'Created At'},
+        ...tableTimestamp
+      }, tableFormat);
+
+      cli.log('\n');
+
+      ux.table(jsonResults.attachments, {
+        addonName: {header: 'Add-On Name'},
+        attachmentName: {header: 'Attachment Name'},
+        // attachmentId: {header: ''},
+        relationship: {header: 'Relationship'},
+        // addonId: {header: ''},
+        // webURL: {header: ''},
+        // logInputURL: {header: ''},
+        // owningAppId: {header: ''},
+        owningAppName: {header: 'Owning App'},
+        // attachedAppId: {header: ''},
+        attachedAppName: {header: 'Attached App'},
         updatedAt: {header: 'Updated At'},
         createdAt: {header: 'Created At'},
         ...tableTimestamp
@@ -312,11 +354,11 @@ class StatusCommand extends Command {
   }
 }
 
-StatusCommand.description = `Current add-on / dyno / app status.
+StatusCommand.description = `Current add-on / attachment / dyno / app status.
 
 (Please note that if neither a team or user is specified, all apps for the current user are determined)
 
-This includes the add-ons status, dynos status, and app status commands.
+This includes the add-ons status, attachment status, dynos status, and app status commands.
 
 Please see those commands for more detail.
 `;
