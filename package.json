@@ -61,7 +61,7 @@
     "test:debug": "node node_modules/mocha/bin/mocha src --recursive --inspect-brk",
     "version": "oclif-dev readme && git add README.md",
     "lint": "node node_modules/eslint/bin/eslint.js .",
-    "lint:watch": "node node_modules/watch/cli.js 'clear && date && npm run lint && echo \"--clean--\"' src test",
+    "lint:watch": "node node_modules/watch/cli.js 'clear && date && npm run lint --silent && echo \"--clean--\"' src test",
     "debug": "node --inspect-brk bin/run",
     "debug:info": "env DEBUG=* bin/run"
   }

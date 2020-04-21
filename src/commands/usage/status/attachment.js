@@ -33,10 +33,10 @@ class AddonStatusCommand extends StatusCommand {
     let appList;
 
     const localizeDate = PrintUtil.printDate.bind(null, useIso);
-    const localizeNumber = PrintUtil.printNumber.bind(null, useIso);
-    const printPlan = PrintUtil.printHerokuCostPlan;
-    const printUnit = PrintUtil.printHerokuCostUnit;
-    const printCost = PrintUtil.printHerokuCostPrice.bind(null, useIso);
+    // const localizeNumber = PrintUtil.printNumber.bind(null, useIso);
+    // const printPlan = PrintUtil.printHerokuCostPlan;
+    // const printUnit = PrintUtil.printHerokuCostUnit;
+    // const printCost = PrintUtil.printHerokuCostPrice.bind(null, useIso);
 
     if (appFlag) {
       appList = appFlag.split(/\s*,\s*/);
