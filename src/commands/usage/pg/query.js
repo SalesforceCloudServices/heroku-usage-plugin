@@ -12,6 +12,8 @@ const fs = require('fs-extra');
 const path = require('path');
 /* eslint-enable no-unused-vars */
 
+const HerokuPostgresQuery = require('../../../modules/HerokuPostgresQuery');
+
 class DailyCommand extends Command {
   async run() {
     let results;
@@ -54,7 +56,10 @@ class DailyCommand extends Command {
       ux.action.start('Retrieving');
       //-- @TODO:
       cli.log(`now executing command against app: ${app}\n${command}`);
-      results = `
+      const {stdout, stderr} = await HerokuPostgresQuery.execute(app, command, file);
+      ux.action.stop();
+
+      stdOutResults = `
 Table    |  Size   | External Size 
 ------------+---------+---------------
   daily      | 1072 kB | 648 kB
@@ -65,9 +70,7 @@ Table    |  Size   | External Size
   dyno       | 216 kB  | 120 kB
 (6 rows)`;
 
-      ux.action.stop();
-
-      stdOutResults = results;
+      results = stdOutResults;
     } catch (error) {
       if (error.statusCode === 401) {
         cli.error('not logged in', {exit: 100});
