@@ -12,7 +12,18 @@ const fs = require('fs-extra');
 const path = require('path');
 /* eslint-enable no-unused-vars */
 
-const HerokuPostgresQuery = require('../../../modules/HerokuPostgresCommand');
+const HerokuPostgresCommand = require('../../../modules/HerokuPostgresCommand');
+
+const EXAMPLE_TABLE = `
+Table    |  Size   | External Size 
+------------+---------+---------------
+  daily      | 1072 kB | 648 kB
+  monthly    | 424 kB  | 272 kB
+  addon      | 344 kB  | 200 kB
+  app        | 296 kB  | 152 kB
+  attachment | 264 kB  | 112 kB
+  dyno       | 216 kB  | 120 kB
+(6 rows)`;
 
 class DailyCommand extends Command {
   async run() {
@@ -54,39 +65,33 @@ class DailyCommand extends Command {
 
     try {
       ux.action.start('Retrieving');
-      //-- @TODO:
       cli.log(`now executing command against app: ${app}\n${command}`);
-      const {stdout, stderr} = await HerokuPostgresQuery.execute(app, command, file);
+      const {stdout, stderr} = await HerokuPostgresCommand.executeQuery(app, command, file);
       ux.action.stop();
 
-      stdOutResults = `
-Table    |  Size   | External Size 
-------------+---------+---------------
-  daily      | 1072 kB | 648 kB
-  monthly    | 424 kB  | 272 kB
-  addon      | 344 kB  | 200 kB
-  app        | 296 kB  | 152 kB
-  attachment | 264 kB  | 112 kB
-  dyno       | 216 kB  | 120 kB
-(6 rows)`;
-
-      results = stdOutResults;
+      if (silent) {
+        //-- do nothing
+      } else if (format === 'json') {
+        results = HerokuPostgresCommand.tableToObjectArray(stdout);
+        cli.log(JSON.stringify(results, null, 2));
+      } else if (results.length === 0) {
+        cli.log('-- No results found --');
+      } else {
+        results = HerokuPostgresCommand.tableToArray(stdout);
+  
+        const resultsHeader = results[0].reduce((headerObj, header, index) => {
+          headerObj[index] = {header};
+          return headerObj;
+        }, {});
+        // ({...headerObj, ({header})}), {});
+        const resultsBody = (results.length === 1) ? [] : results.slice(1);
+        ux.table(resultsBody, resultsHeader, tableFormat);
+      }
     } catch (error) {
       if (error.statusCode === 401) {
         cli.error('not logged in', {exit: 100});
       }
       throw error;
-    }
-
-    if (silent) {
-      //-- do nothing
-    } else if (format === 'json') {
-      cli.log(JSON.stringify(results, null, 2));
-    } else {
-      cli.log(stdOutResults);
-      // ux.table(stdOutResults, {
-      //   name: {header: 'Name'}
-      // }, tableFormat);
     }
 
     return Promise.resolve(results);

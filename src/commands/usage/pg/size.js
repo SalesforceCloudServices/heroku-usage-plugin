@@ -67,7 +67,7 @@ SizeCommand.description = `Performs a query against the postgres database of a s
 `;
 
 SizeCommand.flags = {
-  app: flags.string({char: 'a', required:true, description: 'App to run the command against'}),
+  app: flags.string({char: 'a', required: true, description: 'App to run the command against'}),
   format: flags.string({char: 'f', description: 'format of output', default: 'human', options: ['human', 'json', 'csv']}),
   silent: flags.boolean({char: 's', hidden: true, description: 'Run silently for use in other methods'})
 };

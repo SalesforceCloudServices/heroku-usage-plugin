@@ -3,6 +3,10 @@ const {exec} = require('child-process-promise');
 // const fs = require('fs-extra');
 // const path = require('path');
 
+/**
+ * Module to execute a heroku postgres command.
+ * (Either through a specific query or through heroku-pg-extra)
+ */
 class HerokuPostgresCommand {
   static executeQuery(app, command, filePath) {
     let cmdArguments = `heroku pg:psql -a "${app}" `;
@@ -64,25 +68,27 @@ class HerokuPostgresCommand {
   }
 
   static tableToObjectArray(str) {
-    const results = [];
+    let results = [];
 
     if (!str) return results;
 
     const rowCells = HerokuPostgresCommand.tableToArray(str);
 
-    const header = rowCells[0];
-    const body = rowCells.slice(1, rowCells.length);
-    let headerKey;
+    if (rowCells.length > 0) {
+      const header = rowCells[0];
+      const body = rowCells.length < 2 ? [] : rowCells.slice(1);
+      let headerKey;
 
-    const bodyArray = body.map((row) => row.reduce((result, cell, index) => {
-      if (index < header.length) {
-        headerKey = header[index];
-        result[headerKey] = cell;
-      }
-      return result;
-    }, {}));
+      results = body.map((row) => row.reduce((rowObj, cell, index) => {
+        if (index < header.length) {
+          headerKey = header[index];
+          rowObj[headerKey] = cell;
+        }
+        return rowObj;
+      }, {}));
+    }
 
-    return bodyArray;
+    return results;
   }
 }
 
