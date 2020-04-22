@@ -69,21 +69,19 @@ class DailyCommand extends Command {
       const {stdout, stderr} = await HerokuPostgresCommand.executeQuery(app, command, file);
       ux.action.stop();
 
+      results = HerokuPostgresCommand.tableToArray(stdout);
+
       if (silent) {
         //-- do nothing
       } else if (format === 'json') {
-        results = HerokuPostgresCommand.tableToObjectArray(stdout);
+        // results = HerokuPostgresCommand.tableToObjectArray(stdout);
         cli.log(JSON.stringify(results, null, 2));
+      } else if (results.length === 0) {
+        cli.log('-- No results found --');
       } else {
-        results = HerokuPostgresCommand.tableToArray(stdout);
-
-        if (results.length === 0) {
-          cli.log('-- No results found --');
-        } else {
-          const resultsHeader = HerokuPostgresCommand.generateTableArrayHeaders(results);
-          const resultsBody = results.slice(1);
-          ux.table(resultsBody, resultsHeader, tableFormat);
-        }
+        const resultsHeader = HerokuPostgresCommand.generateTableArrayHeaders(results);
+        const resultsBody = results.slice(1);
+        ux.table(resultsBody, resultsHeader, tableFormat);
       }
     } catch (error) {
       if (error.statusCode === 401) {
