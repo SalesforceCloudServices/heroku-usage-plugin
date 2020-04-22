@@ -80,12 +80,8 @@ class DailyCommand extends Command {
         if (results.length === 0) {
           cli.log('-- No results found --');
         } else {
-          const resultsHeader = results[0].reduce((headerObj, header, index) => {
-            headerObj[index] = {header};
-            return headerObj;
-          }, {});
-          // ({...headerObj, ({header})}), {});
-          const resultsBody = (results.length === 1) ? [] : results.slice(1);
+          const resultsHeader = HerokuPostgresCommand.generateTableArrayHeaders(results);
+          const resultsBody = results.slice(1);
           ux.table(resultsBody, resultsHeader, tableFormat);
         }
       }

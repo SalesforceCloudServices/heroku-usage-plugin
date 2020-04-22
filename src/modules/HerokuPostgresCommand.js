@@ -18,8 +18,7 @@ class HerokuPostgresCommand {
 
     const resultPromise = new Promise((resolve, reject) => {
       exec(cmdArguments)
-        .then(function(execResult) {
-          debugger;
+        .then(function (execResult) {
           let {stderr} = execResult;
           if (stderr && stderr.match(/^-->.+\s+$/)) {
             resolve.apply(this, arguments);
@@ -28,7 +27,6 @@ class HerokuPostgresCommand {
             err.statusCode = 400;
             reject(err);
           }
-          
         })
         .catch(() => {
           reject.apply(this, arguments);
@@ -83,6 +81,17 @@ class HerokuPostgresCommand {
       );
     
     return (rows);
+  }
+
+  static generateTableArrayHeaders(a) {
+    let results = [];
+    if (a.length > 0) {
+      results = a[0].reduce((headerObj, header, index) => {
+        headerObj[index] = {header};
+        return headerObj;
+      }, {});
+    }
+    return results;
   }
 
   static tableToObjectArray(str) {
