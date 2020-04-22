@@ -12,7 +12,7 @@ const fs = require('fs-extra');
 const path = require('path');
 /* eslint-enable no-unused-vars */
 
-const HerokuPostgresQuery = require('../../../modules/HerokuPostgresQuery');
+const HerokuPostgresQuery = require('../../../modules/HerokuPostgresCommand');
 
 class DailyCommand extends Command {
   async run() {

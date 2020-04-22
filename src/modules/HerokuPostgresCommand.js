@@ -1,10 +1,10 @@
 
 const {exec} = require('child-process-promise');
-const fs = require('fs-extra');
-const path = require('path');
+// const fs = require('fs-extra');
+// const path = require('path');
 
-class HerokuPostgresQuery {
-  static execute(app, command, filePath) {
+class HerokuPostgresCommand {
+  static executeQuery(app, command, filePath) {
     let cmdArguments = `heroku pg:psql -a "${app}" `;
     cmdArguments = filePath ?
       `${cmdArguments} -f "${filePath}"` :
@@ -15,6 +15,8 @@ class HerokuPostgresQuery {
     return exec(cmdArguments);
 
     /*
+    //-- spawn option
+
     const resultPromise = new Promise((resolve, reject) => {
       let cmdArguments = [];
       if (filePath) {
@@ -60,6 +62,28 @@ class HerokuPostgresQuery {
     
     return (rows);
   }
+
+  static tableToObjectArray(str) {
+    const results = [];
+
+    if (!str) return results;
+
+    const rowCells = HerokuPostgresCommand.tableToArray(str);
+
+    const header = rowCells[0];
+    const body = rowCells.slice(1, rowCells.length);
+    let headerKey;
+
+    const bodyArray = body.map((row) => row.reduce((result, cell, index) => {
+      if (index < header.length) {
+        headerKey = header[index];
+        result[headerKey] = cell;
+      }
+      return result;
+    }, {}));
+
+    return bodyArray;
+  }
 }
 
-module.exports = HerokuPostgresQuery;
+module.exports = HerokuPostgresCommand;

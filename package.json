@@ -59,7 +59,7 @@
     "prepack": "oclif-dev manifest && oclif-dev readme",
     "test": "node node_modules/mocha/bin/mocha test --recursive",
     "test:watch": "npm run test --silent -- --watch",
-    "test:debug": "node node_modules/mocha/bin/mocha src --recursive --inspect-brk",
+    "test:debug": "node node_modules/mocha/bin/mocha test --recursive --inspect-brk",
     "version": "oclif-dev readme && git add README.md",
     "lint": "node node_modules/eslint/bin/eslint.js .",
     "lint:watch": "node node_modules/watch/cli.js 'clear && date && npm run lint --silent && echo \"--clean--\"' src test",

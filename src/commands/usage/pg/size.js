@@ -12,7 +12,7 @@ const fs = require('fs-extra');
 const path = require('path');
 /* eslint-enable no-unused-vars */
 
-const HerokuPostgresQuery = require('../../../modules/HerokuPostgresQuery');
+const HerokuPostgresQuery = require('../../../modules/HerokuPostgresCommand');
 
 class SizeCommand extends Command {
   async run() {
@@ -24,10 +24,10 @@ class SizeCommand extends Command {
 
     const app = commandFlags.app || null;
 
-    const tableFormat = {
-      csv: format === 'csv',
-      'no-truncate': format === 'csv'
-    };
+    // const tableFormat = {
+    //   csv: format === 'csv',
+    //   'no-truncate': format === 'csv'
+    // };
 
     try {
       ux.action.start('Retrieving');
