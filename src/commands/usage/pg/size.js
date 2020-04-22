@@ -12,31 +12,43 @@ const fs = require('fs-extra');
 const path = require('path');
 /* eslint-enable no-unused-vars */
 
-const HerokuPostgresQuery = require('../../../modules/HerokuPostgresCommand');
+const HerokuPostgresCommand = require('../../../modules/HerokuPostgresCommand');
 
 class SizeCommand extends Command {
   async run() {
     let results;
-    let stdOutResults;
+    // let stdOutResults;
     const {flags: commandFlags} = this.parse(SizeCommand);
     const format = commandFlags.format || 'human';
     const silent = commandFlags.silent || false;
 
     const app = commandFlags.app || null;
 
-    // const tableFormat = {
-    //   csv: format === 'csv',
-    //   'no-truncate': format === 'csv'
-    // };
+    const tableFormat = {
+      csv: format === 'csv',
+      'no-truncate': format === 'csv'
+    };
 
     try {
       ux.action.start('Retrieving');
       //-- @TODO:
-      const {stdout, stderr} = await HerokuPostgresQuery.execExtra(`heroku pg:table-size -a "${app}"`);
+      const {stdout, stderr} = await HerokuPostgresCommand.execExtra(`heroku pg:table-size -a "${app}"`);
       ux.action.stop();
 
-      stdOutResults = stdout;
-      results = HerokuPostgresQuery.tableToArray(stdout);
+      results = HerokuPostgresCommand.tableToArray(stdout);
+
+      if (silent) {
+        //-- do nothing
+      } else if (format === 'json') {
+        // results = HerokuPostgresCommand.tableToObjectArray(stdout);
+        cli.log(JSON.stringify(results, null, 2));
+      } else if (results.length === 0) {
+        cli.log('-- No results found --');
+      } else {
+        const resultsHeader = HerokuPostgresCommand.generateTableArrayHeaders(results);
+        const resultsBody = results.slice(1);
+        ux.table(resultsBody, resultsHeader, tableFormat);
+      }
     } catch (error) {
       if (error.statusCode === 401) {
         cli.error('not logged in', {exit: 100});
@@ -44,26 +56,14 @@ class SizeCommand extends Command {
       throw error;
     }
 
-    if (silent) {
-      //-- do nothing
-    } else if (format === 'json') {
-      cli.log(JSON.stringify(results, null, 2));
-    } else {
-      cli.log(stdOutResults);
-      // ux.table(stdOutResults, {
-      //   name: {header: 'Name'}
-      // }, tableFormat);
-    }
-
     return Promise.resolve(results);
   }
 }
 
-SizeCommand.description = `Performs a query against the postgres database of a specific app.
+SizeCommand.description = `Wrapper for heroku-pg-extras:pg:table-size
 
-(Note: this is intended to be similar to pg:psql - with the added ability to export as JSON)
-
-
+Wraps around the heroku-pg-extras command to provide results in additional formats.
+Such as human, csv and json.
 `;
 
 SizeCommand.flags = {
