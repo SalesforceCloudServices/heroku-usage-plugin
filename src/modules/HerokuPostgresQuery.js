@@ -38,6 +38,28 @@ class HerokuPostgresQuery {
     return resultPromise;
     */
   }
+
+  static execExtra(command) {
+    return exec(command);
+  }
+
+  static tableToArray(str) {
+    const results = [];
+  
+    if (!str) return results;
+  
+    let rows = str.trim().split(/[\r\n]+/)
+      .filter(
+        (lineStr) => lineStr &&
+        !lineStr.match(/^[-+]+$/) &&
+        !lineStr.match(/^\(\s*[\d,]+\s*rows\s*\)/)
+      )
+      .map((lineStr) => lineStr.split(/\|/)
+        .map((str) => str.trim())
+      );
+    
+    return (rows);
+  }
 }
 
 module.exports = HerokuPostgresQuery;
