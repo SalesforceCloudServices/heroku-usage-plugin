@@ -16,7 +16,25 @@ class HerokuPostgresCommand {
     
     console.log(`executing command:${cmdArguments}`);
 
-    return exec(cmdArguments);
+    const resultPromise = new Promise((resolve, reject) => {
+      exec(cmdArguments)
+        .then(function(execResult) {
+          debugger;
+          let {stderr} = execResult;
+          if (stderr && stderr.match(/^-->.+\s+$/)) {
+            resolve.apply(this, arguments);
+          } else {
+            const err = new Error(stderr);
+            err.statusCode = 400;
+            reject(err);
+          }
+          
+        })
+        .catch(() => {
+          reject.apply(this, arguments);
+        });
+    });
+    return resultPromise;
 
     /*
     //-- spawn option

@@ -40,20 +40,62 @@ const TABLE_EXAMPLE_1_JSON = [{'Table': 'daily', 'Size': '1072 kB', 'External Si
   {'Table': 'attachment', 'Size': '264 kB', 'External Size': '112 kB'},
   {'Table': 'dyno', 'Size': '216 kB', 'External Size': '120 kB'}];
 
+const TABLE_EXAMPLE_2 = `
+id |                                                                                                                               str                                                                                                                               
+----+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  1 | normal text                                                                                                                                                                                                                                                    
+  2 | something with "quotes" in it                                                                                                                                                                                                                                  
+  3 | something with a vertical | pipe                                                                                                                                                                                                                               
+(3 rows)`;
+const TABLE_EXAMPLE_2_ARRAY = [['id', 'str'],
+  ['1', 'normal text'],
+  ['2', 'something with "quotes" in it'],
+  ['3', 'something with a vertical', 'pipe']];
+const TABLE_EXAMPLE_2_JSON = [{'id': '1', 'str': 'normal text'},
+  {'id': '2', 'str': 'something with "quotes" in it'},
+  {'id': '3', 'str': 'something with a vertical'}];
+
+const EXAMPLE_ERROR = `
+--> Connecting to postgresql-clear-89313
+ERROR:  syntax error at or near "something"
+LINE 1: something
+        ^
+`;
+
 describe('Table Output Conversion', () => {
-  it('converts a happy path table', () => {
-    const tableStr = TABLE_EXAMPLE_1;
-    const expected = TABLE_EXAMPLE_1_ARRAY;
-    const result = HerokuPostgresCommand.tableToArray(tableStr);
-    // console.log(JSON.stringify(result));
-    expect(result).to.deep.equal(expected);
+  describe('for a happy path table', () => {
+    it('converts to an array', () => {
+      const tableStr = TABLE_EXAMPLE_1;
+      const expected = TABLE_EXAMPLE_1_ARRAY;
+      const result = HerokuPostgresCommand.tableToArray(tableStr);
+      // console.log(JSON.stringify(result));
+      expect(result).to.deep.equal(expected);
+    });
+  
+    it('converts to an array of objects', () => {
+      const tableStr = TABLE_EXAMPLE_1;
+      const expected = TABLE_EXAMPLE_1_JSON;
+      const result = HerokuPostgresCommand.tableToObjectArray(tableStr);
+      // console.log('result', JSON.stringify(result));
+      expect(result).to.deep.equal(expected);
+    });
   });
 
-  it('converts a table to objects', () => {
-    const tableStr = TABLE_EXAMPLE_1;
-    const expected = TABLE_EXAMPLE_1_JSON;
-    const result = HerokuPostgresCommand.tableToObjectArray(tableStr);
-    // console.log('result', JSON.stringify(result));
-    expect(result).to.deep.equal(expected);
+  describe('for a table with pipes in it', () => {
+    it('converts to an array', () => {
+      const tableStr = TABLE_EXAMPLE_2;
+      const expected = TABLE_EXAMPLE_2_ARRAY;
+      const result = HerokuPostgresCommand.tableToArray(tableStr);
+      // console.log(JSON.stringify(result));
+      expect(result).to.deep.equal(expected);
+    });
+  
+    it('converts to an array of objects', () => {
+      const tableStr = TABLE_EXAMPLE_2;
+      const expected = TABLE_EXAMPLE_2_JSON;
+      const result = HerokuPostgresCommand.tableToObjectArray(tableStr);
+      // console.log('result', JSON.stringify(result));
+      expect(result).to.deep.equal(expected);
+    });
   });
 });

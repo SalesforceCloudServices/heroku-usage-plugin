@@ -14,21 +14,21 @@ const path = require('path');
 
 const HerokuPostgresCommand = require('../../../modules/HerokuPostgresCommand');
 
-const EXAMPLE_TABLE = `
-Table    |  Size   | External Size 
-------------+---------+---------------
-  daily      | 1072 kB | 648 kB
-  monthly    | 424 kB  | 272 kB
-  addon      | 344 kB  | 200 kB
-  app        | 296 kB  | 152 kB
-  attachment | 264 kB  | 112 kB
-  dyno       | 216 kB  | 120 kB
-(6 rows)`;
+// const EXAMPLE_TABLE = `
+// Table    |  Size   | External Size 
+// ------------+---------+---------------
+//   daily      | 1072 kB | 648 kB
+//   monthly    | 424 kB  | 272 kB
+//   addon      | 344 kB  | 200 kB
+//   app        | 296 kB  | 152 kB
+//   attachment | 264 kB  | 112 kB
+//   dyno       | 216 kB  | 120 kB
+// (6 rows)`;
 
 class DailyCommand extends Command {
   async run() {
     let results;
-    let stdOutResults;
+    // let stdOutResults;
     const {flags: commandFlags} = this.parse(DailyCommand);
     const format = commandFlags.format || 'human';
     const silent = commandFlags.silent || false;
@@ -74,23 +74,28 @@ class DailyCommand extends Command {
       } else if (format === 'json') {
         results = HerokuPostgresCommand.tableToObjectArray(stdout);
         cli.log(JSON.stringify(results, null, 2));
-      } else if (results.length === 0) {
-        cli.log('-- No results found --');
       } else {
         results = HerokuPostgresCommand.tableToArray(stdout);
-  
-        const resultsHeader = results[0].reduce((headerObj, header, index) => {
-          headerObj[index] = {header};
-          return headerObj;
-        }, {});
-        // ({...headerObj, ({header})}), {});
-        const resultsBody = (results.length === 1) ? [] : results.slice(1);
-        ux.table(resultsBody, resultsHeader, tableFormat);
+
+        if (results.length === 0) {
+          cli.log('-- No results found --');
+        } else {
+          const resultsHeader = results[0].reduce((headerObj, header, index) => {
+            headerObj[index] = {header};
+            return headerObj;
+          }, {});
+          // ({...headerObj, ({header})}), {});
+          const resultsBody = (results.length === 1) ? [] : results.slice(1);
+          ux.table(resultsBody, resultsHeader, tableFormat);
+        }
       }
     } catch (error) {
       if (error.statusCode === 401) {
         cli.error('not logged in', {exit: 100});
+      } else if (error.statusCode === 400) {
+        cli.error('bad request', error.message, {exit: 100});
       }
+      // return Promise.reject(error.message);
       throw error;
     }
 
@@ -106,7 +111,7 @@ DailyCommand.description = `Performs a query against the postgres database of a 
 `;
 
 DailyCommand.flags = {
-  app: flags.string({char: 'a', required:true, description: 'App to run the command against'}),
+  app: flags.string({char: 'a', required: true, description: 'App to run the command against'}),
   command: flags.string({char: 'c', description: 'SQL command to run'}),
   file: flags.string({char: 'l', description: 'Path to file with SQL command to run'}),
   format: flags.string({char: 'f', description: 'format of output', default: 'human', options: ['human', 'json', 'csv']}),
