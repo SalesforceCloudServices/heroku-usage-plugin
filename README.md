@@ -21,8 +21,8 @@ Install through `heroku plugins:install heroku-usage-plugin`
 * [`heroku usage:daily`](#heroku-usagedaily)
 * [`heroku usage:list:apps`](#heroku-usagelistapps)
 * [`heroku usage:monthly`](#heroku-usagemonthly)
+* [`heroku usage:pg:extra`](#heroku-usagepgextra)
 * [`heroku usage:pg:query`](#heroku-usagepgquery)
-* [`heroku usage:pg:size`](#heroku-usagepgsize)
 * [`heroku usage:status`](#heroku-usagestatus)
 * [`heroku usage:status:addon`](#heroku-usagestatusaddon)
 * [`heroku usage:status:app`](#heroku-usagestatusapp)
@@ -110,6 +110,30 @@ DESCRIPTION
 
 _See code: [src/commands/usage/monthly.js](https://github.com/SalesforceCloudServices/heroku-usage-plugin/blob/v1.4.1/src/commands/usage/monthly.js)_
 
+## `heroku usage:pg:extra`
+
+Wrapper for running a heroku-pg-extras plugin with additional output options.
+
+```
+USAGE
+  $ heroku usage:pg:extra
+
+OPTIONS
+  -a, --app=app                (required) App to run the command against
+  -c, --command=command        (required) The pg:[COMMAND] to run. (ex: seq-scans, size-table, etc.)
+  -f, --format=human|json|csv  [default: human] format of output
+
+DESCRIPTION
+  For example: human readible format, csv and JSON.
+
+  (Note that this assumes that the pg-extras)
+
+  For more information, please see:
+  https://github.com/heroku/heroku-pg-extras
+```
+
+_See code: [src/commands/usage/pg/extra.js](https://github.com/SalesforceCloudServices/heroku-usage-plugin/blob/v1.4.1/src/commands/usage/pg/extra.js)_
+
 ## `heroku usage:pg:query`
 
 Performs a query against the postgres database of a specific app.
@@ -129,24 +153,6 @@ DESCRIPTION
 ```
 
 _See code: [src/commands/usage/pg/query.js](https://github.com/SalesforceCloudServices/heroku-usage-plugin/blob/v1.4.1/src/commands/usage/pg/query.js)_
-
-## `heroku usage:pg:size`
-
-Performs a query against the postgres database of a specific app.
-
-```
-USAGE
-  $ heroku usage:pg:size
-
-OPTIONS
-  -a, --app=app                (required) App to run the command against
-  -f, --format=human|json|csv  [default: human] format of output
-
-DESCRIPTION
-  (Note: this is intended to be similar to pg:psql - with the added ability to export as JSON)
-```
-
-_See code: [src/commands/usage/pg/size.js](https://github.com/SalesforceCloudServices/heroku-usage-plugin/blob/v1.4.1/src/commands/usage/pg/size.js)_
 
 ## `heroku usage:status`
 
