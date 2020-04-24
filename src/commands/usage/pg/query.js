@@ -86,11 +86,15 @@ class DailyCommand extends Command {
     } catch (error) {
       if (error.statusCode === 401) {
         cli.error('not logged in', {exit: 100});
+        return;
       } else if (error.statusCode === 400) {
         cli.error('bad request', error.message, {exit: 100});
+        return;
+      } else if (error.name === 'ChildProcessError') {
+        cli.error('bad request', error.message, {exit: 100});
+        return;
       }
-      // return Promise.reject(error.message);
-      throw error;
+      cli.error('error', error.message, {exit: 100});
     }
 
     return Promise.resolve(results);

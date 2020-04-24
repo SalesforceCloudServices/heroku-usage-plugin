@@ -1,5 +1,5 @@
 
-const {exec} = require('child-process-promise');
+const cpp = require('child-process-promise');
 // const fs = require('fs-extra');
 // const path = require('path');
 
@@ -9,14 +9,47 @@ const {exec} = require('child-process-promise');
  */
 class HerokuPostgresCommand {
   static executeQuery(app, command, filePath) {
-    let cmdArguments = `heroku pg:psql -a "${app}" `;
-    cmdArguments = filePath ?
-      `${cmdArguments} -f "${filePath}"` :
-      `${cmdArguments} -c "${command}"`;
+    let cmdArguments = ['pg:psql', '-a', app];
+
+    if (filePath) {
+      cmdArguments = [...cmdArguments, '-f', filePath];
+    } else {
+      cmdArguments = [...cmdArguments, '-c', command];
+    }
+    let cmd = ['heroku', cmdArguments];
     
-    console.log(`executing command:${cmdArguments}`);
+    //-- @TODO: remove/cleanup
+    console.log(`executing command:${cmd[0]} ${cmd[1].join(' ')}`);
 
     const resultPromise = new Promise((resolve, reject) => {
+      const spawnPromise = cpp.spawn.apply(this, cmd);
+      const {childProcess} = spawnPromise;
+      const {pid} = childProcess;
+
+      let stdout = '';
+      let stderr = '';
+      childProcess.stdout.on('data', (data) => {
+        stdout += data.toString();
+      });
+      childProcess.stderr.on('data', (data) => {
+        stderr += data.toString();
+        console.error(`${data.toString()}`);
+      });
+
+      spawnPromise.then(() => {
+        if (stderr && stderr.match(/^-->.+\s+$/)) {
+          resolve({stdout, stderr});
+        } else {
+          const err = new Error(stderr);
+          err.statusCode = 400;
+          reject(err);
+        }
+      })
+        .catch((error) => {
+          reject(error);
+        });
+
+      /*
       exec(cmdArguments)
         .then(function (execResult) {
           let {stderr} = execResult;
@@ -31,6 +64,7 @@ class HerokuPostgresCommand {
         .catch(() => {
           reject.apply(this, arguments);
         });
+      */
     });
     return resultPromise;
 
