@@ -36,7 +36,7 @@ class HerokuPostgresCommand {
       });
 
       spawnPromise.then(() => {
-        if (stderr && stderr.match(/^-->.+\s+$/)) {
+        if (childProcess.exitCode === 0) {
           resolve({stdout, stderr});
         } else {
           const err = new Error(stderr);
@@ -68,9 +68,6 @@ class HerokuPostgresCommand {
       });
       childProcess.stderr.on('data', (data) => {
         stderr += data.toString();
-        const s = spawnPromise;
-        if (stderr.indexOf('is not a heroku command')) {
-        }
         console.error(`${data.toString()}`);
       });
 
