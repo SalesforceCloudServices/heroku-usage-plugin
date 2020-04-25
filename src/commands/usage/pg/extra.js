@@ -32,8 +32,7 @@ class ExtraCommand extends Command {
 
     try {
       ux.action.start('Retrieving');
-      //-- @TODO:
-      const {stdout, stderr} = await HerokuPostgresCommand.execExtra(`heroku pg:${command} -a "${app}"`);
+      const {stdout, stderr} = await HerokuPostgresCommand.execExtra(app, command);
       ux.action.stop();
 
       results = HerokuPostgresCommand.tableToArray(stdout);
@@ -53,8 +52,10 @@ class ExtraCommand extends Command {
     } catch (error) {
       if (error.statusCode === 401) {
         cli.error('not logged in', {exit: 100});
+        return;
       }
-      throw error;
+      cli.error('error', error.message, {exit: 100});
+      // throw error;
     }
 
     return Promise.resolve(results);

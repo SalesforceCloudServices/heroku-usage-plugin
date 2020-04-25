@@ -18,13 +18,12 @@ class HerokuPostgresCommand {
     }
     let cmd = ['heroku', cmdArguments];
     
-    //-- @TODO: remove/cleanup
     console.log(`executing command:${cmd[0]} ${cmd[1].join(' ')}`);
 
     const resultPromise = new Promise((resolve, reject) => {
       const spawnPromise = cpp.spawn.apply(this, cmd);
       const {childProcess} = spawnPromise;
-      const {pid} = childProcess;
+      // const {pid} = childProcess;
 
       let stdout = '';
       let stderr = '';
@@ -48,55 +47,47 @@ class HerokuPostgresCommand {
         .catch((error) => {
           reject(error);
         });
-
-      /*
-      exec(cmdArguments)
-        .then(function (execResult) {
-          let {stderr} = execResult;
-          if (stderr && stderr.match(/^-->.+\s+$/)) {
-            resolve.apply(this, arguments);
-          } else {
-            const err = new Error(stderr);
-            err.statusCode = 400;
-            reject(err);
-          }
-        })
-        .catch(() => {
-          reject.apply(this, arguments);
-        });
-      */
     });
     return resultPromise;
-
-    /*
-    //-- spawn option
-
-    const resultPromise = new Promise((resolve, reject) => {
-      let cmdArguments = [];
-      if (filePath) {
-        cmdArguments = [...cmdArguments, '-f', filePath];
-      } else {
-        cmdArguments = [...cmdArguments, '-c', command];
-      }
-      cmdArguments = ['heroku', ['pg:psql', ...cmdArguments]];
-      console.log(`executing arguments: ${cmdArguments}`);
-
-      const execPromise = spawn(cmdArguments);
-      const {childProcess} = execPromise;
-      const {pid} = childProcess;
-
-      exec()
-
-      childProcess.stdout.on()
-
-      resolve(execArguments);
-    });
-    return resultPromise;
-    */
   }
 
-  static execExtra(command) {
-    return exec(command);
+  static execExtra(app, command) {
+    const cmd = ['heroku', [`pg:${command}`, '-a', app]];
+
+    console.log(`executing command:${cmd[0]} ${cmd[1].join(' ')}`);
+
+    const resultPromise = new Promise((resolve, reject) => {
+      const spawnPromise = cpp.spawn.apply(this, cmd);
+      const {childProcess} = spawnPromise;
+      // const {pid} = childProcess;
+
+      let stdout = '';
+      let stderr = '';
+      childProcess.stdout.on('data', (data) => {
+        stdout += data.toString();
+      });
+      childProcess.stderr.on('data', (data) => {
+        stderr += data.toString();
+        const s = spawnPromise;
+        if (stderr.indexOf('is not a heroku command')) {
+        }
+        console.error(`${data.toString()}`);
+      });
+
+      spawnPromise.then(() => {
+        if (childProcess.exitCode === 0) {
+          resolve({stdout, stderr});
+        } else {
+          const err = new Error(stderr);
+          err.statusCode = 400;
+          reject(err);
+        }
+      })
+        .catch((error) => {
+          reject(error);
+        });
+    });
+    return resultPromise;
   }
 
   static tableToArray(str) {
