@@ -99,7 +99,7 @@ class HerokuPostgresCommand {
       .filter(
         (lineStr) => lineStr &&
         !lineStr.match(/^[-+]+$/) &&
-        !lineStr.match(/^\(\s*[\d,]+\s*rows\s*\)/)
+        !lineStr.match(/^\(\s*[\d,]+\s*rows?\s*\)/)
       )
       .map((lineStr) => lineStr.split(/\|/)
         .map((str) => str.trim())
