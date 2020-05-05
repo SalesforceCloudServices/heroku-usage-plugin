@@ -1,5 +1,7 @@
 
 const cpp = require('child-process-promise');
+const cli = require('heroku-cli-util');
+
 // const fs = require('fs-extra');
 // const path = require('path');
 
@@ -18,7 +20,7 @@ class HerokuPostgresCommand {
     }
     let cmd = ['heroku', cmdArguments];
     
-    console.log(`executing command:${cmd[0]} ${cmd[1].join(' ')}`);
+    cli.error(`executing command:${cmd[0]} ${cmd[1].join(' ')}`);
 
     const resultPromise = new Promise((resolve, reject) => {
       const spawnPromise = cpp.spawn.apply(this, cmd);
@@ -54,7 +56,7 @@ class HerokuPostgresCommand {
   static execExtra(app, command) {
     const cmd = ['heroku', [`pg:${command}`, '-a', app]];
 
-    console.log(`executing command:${cmd[0]} ${cmd[1].join(' ')}`);
+    cli.error(`executing command:${cmd[0]} ${cmd[1].join(' ')}`);
 
     const resultPromise = new Promise((resolve, reject) => {
       const spawnPromise = cpp.spawn.apply(this, cmd);
